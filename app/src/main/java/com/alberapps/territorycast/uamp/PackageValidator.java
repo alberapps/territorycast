@@ -55,7 +55,7 @@ public class PackageValidator {
 
     public PackageValidator(Context ctx) {
         mValidCertificates = readValidCertificates(ctx.getResources().getXml(
-            R.xml.allowed_media_browser_callers));
+                R.xml.allowed_media_browser_callers));
     }
 
     private Map<String, ArrayList<CallerInfo>> readValidCertificates(XmlResourceParser parser) {
@@ -79,8 +79,8 @@ public class PackageValidator {
                         validCertificates.put(certificate, infos);
                     }
                     LogHelper.v(TAG, "Adding allowed caller: ", info.name,
-                        " package=", info.packageName, " release=", info.release,
-                        " certificate=", certificate);
+                            " package=", info.packageName, " release=", info.release,
+                            " certificate=", certificate);
                     infos.add(info);
                 }
                 eventType = parser.next();
@@ -100,27 +100,27 @@ public class PackageValidator {
         if (Process.SYSTEM_UID == callingUid || Process.myUid() == callingUid) {
             return true;
         }
-        PackageManager packageManager = context.getPackageManager();
-        PackageInfo packageInfo;
-        try {
-            packageInfo = packageManager.getPackageInfo(
-                    callingPackage, PackageManager.GET_SIGNATURES);
-        } catch (PackageManager.NameNotFoundException e) {
-            LogHelper.w(TAG, e, "Package manager can't find package: ", callingPackage);
+
+        if (isPlatformSigned(context, callingPackage)) {
+            return true;
+        }
+
+        PackageInfo packageInfo = getPackageInfo(context, callingPackage);
+        if (packageInfo == null) {
             return false;
         }
         if (packageInfo.signatures.length != 1) {
-            LogHelper.w(TAG, "Caller has more than one signature certificate!");
+            LogHelper.w(TAG, "Caller does not have exactly one signature certificate!");
             return false;
         }
         String signature = Base64.encodeToString(
-            packageInfo.signatures[0].toByteArray(), Base64.NO_WRAP);
+                packageInfo.signatures[0].toByteArray(), Base64.NO_WRAP);
 
         // Test for known signatures:
         ArrayList<CallerInfo> validCallers = mValidCertificates.get(signature);
         if (validCallers == null) {
             LogHelper.v(TAG, "Signature for caller ", callingPackage, " is not valid: \n"
-                , signature);
+                    , signature);
             if (mValidCertificates.isEmpty()) {
                 LogHelper.w(TAG, "The list of valid certificates is empty. Either your file ",
                         "res/xml/allowed_media_browser_callers.xml is empty or there was an error ",
@@ -134,18 +134,50 @@ public class PackageValidator {
         for (CallerInfo info: validCallers) {
             if (callingPackage.equals(info.packageName)) {
                 LogHelper.v(TAG, "Valid caller: ", info.name, "  package=", info.packageName,
-                    " release=", info.release);
+                        " release=", info.release);
                 return true;
             }
             expectedPackages.append(info.packageName).append(' ');
         }
 
         LogHelper.i(TAG, "Caller has a valid certificate, but its package doesn't match any ",
-            "expected package for the given certificate. Caller's package is ", callingPackage,
-            ". Expected packages as defined in res/xml/allowed_media_browser_callers.xml are (",
-            expectedPackages, "). This caller's certificate is: \n", signature);
+                "expected package for the given certificate. Caller's package is ", callingPackage,
+                ". Expected packages as defined in res/xml/allowed_media_browser_callers.xml are (",
+                expectedPackages, "). This caller's certificate is: \n", signature);
 
         return false;
+    }
+
+    /**
+     * @return true if the installed package signature matches the platform signature.
+     */
+    private boolean isPlatformSigned(Context context, String pkgName) {
+        PackageInfo platformPackageInfo = getPackageInfo(context, "android");
+
+        // Should never happen.
+        if (platformPackageInfo == null || platformPackageInfo.signatures == null
+                || platformPackageInfo.signatures.length == 0) {
+            return false;
+        }
+
+        PackageInfo clientPackageInfo = getPackageInfo(context, pkgName);
+
+        return (clientPackageInfo != null && clientPackageInfo.signatures != null
+                && clientPackageInfo.signatures.length > 0 &&
+                platformPackageInfo.signatures[0].equals(clientPackageInfo.signatures[0]));
+    }
+
+    /**
+     * @return {@link PackageInfo} for the package name or null if it's not found.
+     */
+    private PackageInfo getPackageInfo(Context context, String pkgName) {
+        try {
+            final PackageManager pm = context.getPackageManager();
+            return pm.getPackageInfo(pkgName, PackageManager.GET_SIGNATURES);
+        } catch (PackageManager.NameNotFoundException e) {
+            LogHelper.w(TAG, e, "Package manager can't find package: ", pkgName);
+        }
+        return null;
     }
 
     private final static class CallerInfo {

@@ -56,7 +56,7 @@
             android:name=".uamp.ui.MusicPlayerActivity"
             android:label="@string/app_name"
             android:parentActivityName=".MainActivity"
-            android:theme="@style/AppTheme">
+            android:theme="@style/UAmpAppTheme">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".MainActivity" />
@@ -143,6 +143,13 @@
 
         <!-- Service that keeps track of reconnecting to Cast when wifi is enabled. -->
         <service android:name="com.google.android.libraries.cast.companionlibrary.cast.reconnection.ReconnectionService" />
+
+        <!--
+            (REQUIRED) use this meta data to to declare the app OptionsProvider.
+       -->
+        <meta-data
+            android:name="com.google.android.gms.cast.framework.OPTIONS_PROVIDER_CLASS_NAME"
+            android:value="com.alberapps.territorycast.uamp.CastOptionsProvider" />
 
         <!--
              A full screen activity showing controls and a seek bar for

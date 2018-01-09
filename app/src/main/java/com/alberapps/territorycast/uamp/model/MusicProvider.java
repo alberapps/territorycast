@@ -44,6 +44,7 @@ import static com.alberapps.territorycast.uamp.utils.MediaIDHelper.MEDIA_ID_MUSI
 import static com.alberapps.territorycast.uamp.utils.MediaIDHelper.MEDIA_ID_ROOT;
 import static com.alberapps.territorycast.uamp.utils.MediaIDHelper.createMediaID;
 
+
 /**
  * Simple data provider for music tracks. The actual metadata source is delegated to a
  * MusicProviderSource defined by a constructor argument of this class.
@@ -139,7 +140,7 @@ public class MusicProvider {
      * Get music tracks of the given genre
      *
      */
-    public Iterable<MediaMetadataCompat> getMusicsByGenre(String genre) {
+    public List<MediaMetadataCompat> getMusicsByGenre(String genre) {
         if (mCurrentState != State.INITIALIZED || !mMusicListByGenre.containsKey(genre)) {
             return Collections.emptyList();
         }
@@ -151,7 +152,7 @@ public class MusicProvider {
      * the given query.
      *
      */
-    public Iterable<MediaMetadataCompat> searchMusicBySongTitle(String query) {
+    public List<MediaMetadataCompat> searchMusicBySongTitle(String query) {
         return searchMusic(MediaMetadataCompat.METADATA_KEY_TITLE, query);
     }
 
@@ -160,7 +161,7 @@ public class MusicProvider {
      * the given query.
      *
      */
-    public Iterable<MediaMetadataCompat> searchMusicByAlbum(String query) {
+    public List<MediaMetadataCompat> searchMusicByAlbum(String query) {
         return searchMusic(MediaMetadataCompat.METADATA_KEY_ALBUM, query);
     }
 
@@ -169,11 +170,20 @@ public class MusicProvider {
      * the given query.
      *
      */
-    public Iterable<MediaMetadataCompat> searchMusicByArtist(String query) {
+    public List<MediaMetadataCompat> searchMusicByArtist(String query) {
         return searchMusic(MediaMetadataCompat.METADATA_KEY_ARTIST, query);
     }
 
-    Iterable<MediaMetadataCompat> searchMusic(String metadataField, String query) {
+    /**
+     * Very basic implementation of a search that filter music tracks with a genre containing
+     * the given query.
+     *
+     */
+    public List<MediaMetadataCompat> searchMusicByGenre(String query) {
+        return searchMusic(MediaMetadataCompat.METADATA_KEY_GENRE, query);
+    }
+
+    private List<MediaMetadataCompat> searchMusic(String metadataField, String query) {
         if (mCurrentState != State.INITIALIZED) {
             return Collections.emptyList();
         }
@@ -181,7 +191,7 @@ public class MusicProvider {
         query = query.toLowerCase(Locale.US);
         for (MutableMediaMetadata track : mMusicListById.values()) {
             if (track.metadata.getString(metadataField).toLowerCase(Locale.US)
-                .contains(query)) {
+                    .contains(query)) {
                 result.add(track.metadata);
             }
         }
@@ -230,6 +240,10 @@ public class MusicProvider {
         }
     }
 
+    public boolean isInitialized() {
+        return mCurrentState == State.INITIALIZED;
+    }
+
     public boolean isFavorite(String musicId) {
         return mFavoriteTracks.contains(musicId);
     }
@@ -276,12 +290,7 @@ public class MusicProvider {
                 newMusicListByGenre.put(genre, list);
             }
             list.add(m.metadata);
-
         }
-
-
-
-
         mMusicListByGenre = newMusicListByGenre;
     }
 
@@ -349,7 +358,7 @@ public class MusicProvider {
     }
 
     private MediaBrowserCompat.MediaItem createBrowsableMediaItemForGenre(String genre,
-                                                                    Resources resources) {
+                                                                          Resources resources) {
         MediaDescriptionCompat description = new MediaDescriptionCompat.Builder()
                 .setMediaId(createMediaID(null, MEDIA_ID_MUSICS_BY_GENRE, genre))
                 .setTitle(genre)
@@ -377,3 +386,4 @@ public class MusicProvider {
     }
 
 }
+

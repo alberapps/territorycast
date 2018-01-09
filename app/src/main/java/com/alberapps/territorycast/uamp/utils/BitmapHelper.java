@@ -31,10 +31,10 @@ public class BitmapHelper {
     private static final int MAX_READ_LIMIT_PER_IMG = 1024 * 1024;
 
     public static Bitmap scaleBitmap(Bitmap src, int maxWidth, int maxHeight) {
-       double scaleFactor = Math.min(
-           ((double) maxWidth)/src.getWidth(), ((double) maxHeight)/src.getHeight());
+        double scaleFactor = Math.min(
+                ((double) maxWidth)/src.getWidth(), ((double) maxHeight)/src.getHeight());
         return Bitmap.createScaledBitmap(src,
-            (int) (src.getWidth() * scaleFactor), (int) (src.getHeight() * scaleFactor), false);
+                (int) (src.getWidth() * scaleFactor), (int) (src.getHeight() * scaleFactor), false);
     }
 
     public static Bitmap scaleBitmap(int scaleFactor, InputStream is) {

@@ -201,4 +201,8 @@
     <string name="analytics_on_desc">Permitir el envío de estadísticas anónimas de uso y control de errores</string>
 
 
+    <!-- Notificaiton Channel -->
+    <string name="notification_channel">TerritoryCast_Channel_ID</string>
+    <string name="notification_channel_description">Channel ID for TerritoryCast</string>
+
 </resources>

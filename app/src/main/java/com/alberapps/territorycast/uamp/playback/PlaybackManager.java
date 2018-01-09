@@ -172,13 +172,15 @@ public class PlaybackManager implements Playback.Callback {
 
     private long getAvailableActions() {
         long actions =
-                PlaybackStateCompat.ACTION_PLAY |
-                PlaybackStateCompat.ACTION_PLAY_FROM_MEDIA_ID |
-                PlaybackStateCompat.ACTION_PLAY_FROM_SEARCH |
-                PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS |
-                PlaybackStateCompat.ACTION_SKIP_TO_NEXT;
+                PlaybackStateCompat.ACTION_PLAY_PAUSE |
+                        PlaybackStateCompat.ACTION_PLAY_FROM_MEDIA_ID |
+                        PlaybackStateCompat.ACTION_PLAY_FROM_SEARCH |
+                        PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS |
+                        PlaybackStateCompat.ACTION_SKIP_TO_NEXT;
         if (mPlayback.isPlaying()) {
             actions |= PlaybackStateCompat.ACTION_PAUSE;
+        } else {
+            actions |= PlaybackStateCompat.ACTION_PLAY;
         }
         return actions;
     }
@@ -225,16 +227,16 @@ public class PlaybackManager implements Playback.Callback {
         if (playback == null) {
             throw new IllegalArgumentException("Playback cannot be null");
         }
-        // suspend the current one.
+        // Suspends current state.
         int oldState = mPlayback.getState();
-        int pos = mPlayback.getCurrentStreamPosition();
+        long pos = mPlayback.getCurrentStreamPosition();
         String currentMediaId = mPlayback.getCurrentMediaId();
         mPlayback.stop(false);
         playback.setCallback(this);
-        playback.setCurrentStreamPosition(pos < 0 ? 0 : pos);
         playback.setCurrentMediaId(currentMediaId);
+        playback.seekTo(pos < 0 ? 0 : pos);
         playback.start();
-        // finally swap the instance
+        // Swaps instance.
         mPlayback = playback;
         switch (oldState) {
             case PlaybackStateCompat.STATE_BUFFERING:
@@ -274,7 +276,6 @@ public class PlaybackManager implements Playback.Callback {
         public void onSkipToQueueItem(long queueId) {
             LogHelper.d(TAG, "OnSkipToQueueItem:" + queueId);
             mQueueManager.setCurrentQueueItem(queueId);
-            handlePlayRequest();
             mQueueManager.updateMetadata();
         }
 
@@ -362,9 +363,22 @@ public class PlaybackManager implements Playback.Callback {
             LogHelper.d(TAG, "playFromSearch  query=", query, " extras=", extras);
 
             mPlayback.setState(PlaybackStateCompat.STATE_CONNECTING);
-            mQueueManager.setQueueFromSearch(query, extras);
-            handlePlayRequest();
-            mQueueManager.updateMetadata();
+            mMusicProvider.retrieveMediaAsync(new MusicProvider.Callback() {
+                @Override
+                public void onMusicCatalogReady(boolean success) {
+                    if (!success) {
+                        updatePlaybackState("Could not load catalog");
+                    }
+
+                    boolean successSearch = mQueueManager.setQueueFromSearch(query, extras);
+                    if (successSearch) {
+                        handlePlayRequest();
+                        mQueueManager.updateMetadata();
+                    } else {
+                        updatePlaybackState("Could not find music");
+                    }
+                }
+            });
         }
     }
 

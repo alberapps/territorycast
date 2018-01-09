@@ -113,14 +113,18 @@ public class QueueManager {
         return true;
     }
 
-    public void setQueueFromSearch(String query, Bundle extras) {
-        setCurrentQueue(mResources.getString(R.string.search_queue_title),
-                QueueHelper.getPlayingQueueFromSearch(query, extras, mMusicProvider));
+    public boolean setQueueFromSearch(String query, Bundle extras) {
+        List<MediaSessionCompat.QueueItem> queue =
+                QueueHelper.getPlayingQueueFromSearch(query, extras, mMusicProvider);
+        setCurrentQueue(mResources.getString(R.string.search_queue_title), queue);
+        updateMetadata();
+        return queue != null && !queue.isEmpty();
     }
 
     public void setRandomQueue() {
         setCurrentQueue(mResources.getString(R.string.random_queue_title),
                 QueueHelper.getRandomQueue(mMusicProvider));
+        updateMetadata();
     }
 
     public void setQueueFromMusic(String mediaId) {

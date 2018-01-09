@@ -18,6 +18,8 @@ package com.alberapps.territorycast.uamp.model;
 
 import android.support.v4.media.MediaMetadataCompat;
 
+import com.alberapps.territorycast.uamp.utils.LogHelper;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -30,8 +32,6 @@ import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import com.alberapps.territorycast.uamp.utils.LogHelper;
-
 /**
  * Utility class to get a list of MusicTrack's based on a server-side JSON
  * configuration.
@@ -41,7 +41,7 @@ public class RemoteJSONSource implements MusicProviderSource {
     private static final String TAG = LogHelper.makeLogTag(RemoteJSONSource.class);
 
     protected static final String CATALOG_URL =
-        "http://storage.googleapis.com/automotive-media/music.json";
+            "http://storage.googleapis.com/automotive-media/music.json";
 
     private static final String JSON_MUSIC = "music";
     private static final String JSON_TITLE = "title";

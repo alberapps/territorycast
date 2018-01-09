@@ -44,15 +44,23 @@ package com.alberapps.territorycast.uamp;
  import com.alberapps.territorycast.uamp.ui.NowPlayingActivity;
  import com.alberapps.territorycast.uamp.utils.CarHelper;
  import com.alberapps.territorycast.uamp.utils.LogHelper;
+ import com.alberapps.territorycast.uamp.utils.TvHelper;
  import com.alberapps.territorycast.uamp.utils.WearHelper;
- import com.google.android.gms.cast.ApplicationMetadata;
- import com.google.android.libraries.cast.companionlibrary.cast.VideoCastManager;
- import com.google.android.libraries.cast.companionlibrary.cast.callbacks.VideoCastConsumerImpl;
+ import com.google.android.gms.cast.framework.CastContext;
+ import com.google.android.gms.cast.framework.CastSession;
+ import com.google.android.gms.cast.framework.SessionManager;
+ import com.google.android.gms.cast.framework.SessionManagerListener;
+ import com.google.android.gms.common.ConnectionResult;
+ import com.google.android.gms.common.GoogleApiAvailability;
 
  import java.lang.ref.WeakReference;
+ import java.util.ArrayList;
  import java.util.List;
 
+ import static com.alberapps.territorycast.uamp.utils.MediaIDHelper.MEDIA_ID_EMPTY_ROOT;
  import static com.alberapps.territorycast.uamp.utils.MediaIDHelper.MEDIA_ID_ROOT;
+
+
 
  /**
   * This class provides a MediaBrowser through a service. It exposes the media library to a browsing
@@ -83,7 +91,7 @@ package com.alberapps.territorycast.uamp;
   * <li> Update playbackState, "now playing" metadata and queue, using MediaSession proper methods
   *      {@link android.media.session.MediaSession#setPlaybackState(android.media.session.PlaybackState)}
   *      {@link android.media.session.MediaSession#setMetadata(android.media.MediaMetadata)} and
-  *      {@link android.media.session.MediaSession#setQueue(List)})
+  *      {@link android.media.session.MediaSession#setQueue(java.util.List)})
   *
   * <li> Declare and export the service in AndroidManifest with an intent receiver for the action
   *      android.media.browse.MediaBrowserService
@@ -141,49 +149,11 @@ package com.alberapps.territorycast.uamp;
      private final DelayedStopHandler mDelayedStopHandler = new DelayedStopHandler(this);
      private MediaRouter mMediaRouter;
      private PackageValidator mPackageValidator;
+     private SessionManager mCastSessionManager;
+     private SessionManagerListener<CastSession> mCastSessionManagerListener;
 
      private boolean mIsConnectedToCar;
      private BroadcastReceiver mCarConnectionReceiver;
-
-     /**
-      * Consumer responsible for switching the Playback instances depending on whether
-      * it is connected to a remote player.
-      */
-     private final VideoCastConsumerImpl mCastConsumer = new VideoCastConsumerImpl() {
-
-         @Override
-         public void onApplicationConnected(ApplicationMetadata appMetadata, String sessionId,
-                                            boolean wasLaunched) {
-             // In case we are casting, send the device name as an extra on MediaSession metadata.
-             mSessionExtras.putString(EXTRA_CONNECTED_CAST,
-                     VideoCastManager.getInstance().getDeviceName());
-             mSession.setExtras(mSessionExtras);
-             // Now we can switch to CastPlayback
-             Playback playback = new CastPlayback(mMusicProvider);
-             mMediaRouter.setMediaSessionCompat(mSession);
-             mPlaybackManager.switchToPlayback(playback, true);
-         }
-
-         @Override
-         public void onDisconnectionReason(int reason) {
-             LogHelper.d(TAG, "onDisconnectionReason");
-             // This is our final chance to update the underlying stream position
-             // In onDisconnected(), the underlying CastPlayback#mVideoCastConsumer
-             // is disconnected and hence we update our local value of stream position
-             // to the latest position.
-             mPlaybackManager.getPlayback().updateLastKnownStreamPosition();
-         }
-
-         @Override
-         public void onDisconnected() {
-             LogHelper.d(TAG, "onDisconnected");
-             mSessionExtras.remove(EXTRA_CONNECTED_CAST);
-             mSession.setExtras(mSessionExtras);
-             Playback playback = new LocalPlayback(MusicService.this, mMusicProvider);
-             mMediaRouter.setMediaSessionCompat(null);
-             mPlaybackManager.switchToPlayback(playback, false);
-         }
-     };
 
      /*
       * (non-Javadoc)
@@ -259,7 +229,17 @@ package com.alberapps.territorycast.uamp;
          } catch (RemoteException e) {
              throw new IllegalStateException("Could not create a MediaNotificationManager", e);
          }
-         VideoCastManager.getInstance().addVideoCastConsumer(mCastConsumer);
+
+         int playServicesAvailable =
+                 GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(this);
+
+         if (!TvHelper.isTvUiMode(this) && playServicesAvailable == ConnectionResult.SUCCESS) {
+             mCastSessionManager = CastContext.getSharedInstance(this).getSessionManager();
+             mCastSessionManagerListener = new CastSessionManagerListener();
+             mCastSessionManager.addSessionManagerListener(mCastSessionManagerListener,
+                     CastSession.class);
+         }
+
          mMediaRouter = MediaRouter.getInstance(getApplicationContext());
 
          registerCarConnectionReceiver();
@@ -267,7 +247,7 @@ package com.alberapps.territorycast.uamp;
 
      /**
       * (non-Javadoc)
-      * @see android.app.Service#onStartCommand(Intent, int, int)
+      * @see android.app.Service#onStartCommand(android.content.Intent, int, int)
       */
      @Override
      public int onStartCommand(Intent startIntent, int flags, int startId) {
@@ -278,7 +258,7 @@ package com.alberapps.territorycast.uamp;
                  if (CMD_PAUSE.equals(command)) {
                      mPlaybackManager.handlePauseRequest();
                  } else if (CMD_STOP_CASTING.equals(command)) {
-                     VideoCastManager.getInstance().disconnect();
+                     CastContext.getSharedInstance(this).getSessionManager().endCurrentSession(true);
                  }
              } else {
                  // Try to handle the intent as a media button event wrapped by MediaButtonReceiver
@@ -292,6 +272,16 @@ package com.alberapps.territorycast.uamp;
          return START_STICKY;
      }
 
+     /*
+      * Handle case when user swipes the app away from the recents apps list by
+      * stopping the service (and any ongoing playback).
+      */
+     @Override
+     public void onTaskRemoved(Intent rootIntent) {
+         super.onTaskRemoved(rootIntent);
+         stopSelf();
+     }
+
      /**
       * (non-Javadoc)
       * @see android.app.Service#onDestroy()
@@ -303,7 +293,12 @@ package com.alberapps.territorycast.uamp;
          // Service is being killed, so make sure we release our resources
          mPlaybackManager.handleStopRequest(null);
          mMediaNotificationManager.stopNotification();
-         VideoCastManager.getInstance().removeVideoCastConsumer(mCastConsumer);
+
+         if (mCastSessionManager != null) {
+             mCastSessionManager.removeSessionManagerListener(mCastSessionManagerListener,
+                     CastSession.class);
+         }
+
          mDelayedStopHandler.removeCallbacksAndMessages(null);
          mSession.release();
      }
@@ -316,11 +311,13 @@ package com.alberapps.territorycast.uamp;
          // To ensure you are not allowing any arbitrary app to browse your app's contents, you
          // need to check the origin:
          if (!mPackageValidator.isCallerAllowed(this, clientPackageName, clientUid)) {
-             // If the request comes from an untrusted package, return null. No further calls will
-             // be made to other media browsing methods.
-             LogHelper.w(TAG, "OnGetRoot: IGNORING request from untrusted package "
+             // If the request comes from an untrusted package, return an empty browser root.
+             // If you return null, then the media browser will not be able to connect and
+             // no further calls will be made to other media browsing methods.
+             LogHelper.i(TAG, "OnGetRoot: Browsing NOT ALLOWED for unknown caller. "
+                     + "Returning empty browser root so all apps can use MediaController."
                      + clientPackageName);
-             return null;
+             return new MediaBrowserServiceCompat.BrowserRoot(MEDIA_ID_EMPTY_ROOT, null);
          }
          //noinspection StatementWithEmptyBody
          if (CarHelper.isValidCarPackage(clientPackageName)) {
@@ -344,7 +341,21 @@ package com.alberapps.territorycast.uamp;
      public void onLoadChildren(@NonNull final String parentMediaId,
                                 @NonNull final Result<List<MediaItem>> result) {
          LogHelper.d(TAG, "OnLoadChildren: parentMediaId=", parentMediaId);
-         result.sendResult(mMusicProvider.getChildren(parentMediaId, getResources()));
+         if (MEDIA_ID_EMPTY_ROOT.equals(parentMediaId)) {
+             result.sendResult(new ArrayList<MediaItem>());
+         } else if (mMusicProvider.isInitialized()) {
+             // if music library is ready, return immediately
+             result.sendResult(mMusicProvider.getChildren(parentMediaId, getResources()));
+         } else {
+             // otherwise, only return results when the music library is retrieved
+             result.detach();
+             mMusicProvider.retrieveMediaAsync(new MusicProvider.Callback() {
+                 @Override
+                 public void onMusicCatalogReady(boolean success) {
+                     result.sendResult(mMusicProvider.getChildren(parentMediaId, getResources()));
+                 }
+             });
+         }
      }
 
      /**
@@ -352,9 +363,7 @@ package com.alberapps.territorycast.uamp;
       */
      @Override
      public void onPlaybackStart() {
-         if (!mSession.isActive()) {
-             mSession.setActive(true);
-         }
+         mSession.setActive(true);
 
          mDelayedStopHandler.removeCallbacksAndMessages(null);
 
@@ -370,6 +379,7 @@ package com.alberapps.territorycast.uamp;
       */
      @Override
      public void onPlaybackStop() {
+         mSession.setActive(false);
          // Reset the delayed stop handler, so after STOP_DELAY it will be executed again,
          // potentially stopping the service.
          mDelayedStopHandler.removeCallbacksAndMessages(null);
@@ -426,6 +436,68 @@ package com.alberapps.territorycast.uamp;
                  LogHelper.d(TAG, "Stopping service with delay handler.");
                  service.stopSelf();
              }
+         }
+     }
+
+     /**
+      * Session Manager Listener responsible for switching the Playback instances
+      * depending on whether it is connected to a remote player.
+      */
+     private class CastSessionManagerListener implements SessionManagerListener<CastSession> {
+
+         @Override
+         public void onSessionEnded(CastSession session, int error) {
+             LogHelper.d(TAG, "onSessionEnded");
+             mSessionExtras.remove(EXTRA_CONNECTED_CAST);
+             mSession.setExtras(mSessionExtras);
+             Playback playback = new LocalPlayback(MusicService.this, mMusicProvider);
+             mMediaRouter.setMediaSessionCompat(null);
+             mPlaybackManager.switchToPlayback(playback, false);
+         }
+
+         @Override
+         public void onSessionResumed(CastSession session, boolean wasSuspended) {
+         }
+
+         @Override
+         public void onSessionStarted(CastSession session, String sessionId) {
+             // In case we are casting, send the device name as an extra on MediaSession metadata.
+             mSessionExtras.putString(EXTRA_CONNECTED_CAST,
+                     session.getCastDevice().getFriendlyName());
+             mSession.setExtras(mSessionExtras);
+             // Now we can switch to CastPlayback
+             Playback playback = new CastPlayback(mMusicProvider, MusicService.this);
+             mMediaRouter.setMediaSessionCompat(mSession);
+             mPlaybackManager.switchToPlayback(playback, true);
+         }
+
+         @Override
+         public void onSessionStarting(CastSession session) {
+         }
+
+         @Override
+         public void onSessionStartFailed(CastSession session, int error) {
+         }
+
+         @Override
+         public void onSessionEnding(CastSession session) {
+             // This is our final chance to update the underlying stream position
+             // In onSessionEnded(), the underlying CastPlayback#mRemoteMediaClient
+             // is disconnected and hence we update our local value of stream position
+             // to the latest position.
+             mPlaybackManager.getPlayback().updateLastKnownStreamPosition();
+         }
+
+         @Override
+         public void onSessionResuming(CastSession session, String sessionId) {
+         }
+
+         @Override
+         public void onSessionResumeFailed(CastSession session, int error) {
+         }
+
+         @Override
+         public void onSessionSuspended(CastSession session, int reason) {
          }
      }
  }

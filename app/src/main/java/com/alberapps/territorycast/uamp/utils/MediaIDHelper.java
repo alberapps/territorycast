@@ -16,7 +16,11 @@
 
 package com.alberapps.territorycast.uamp.utils;
 
+import android.app.Activity;
 import android.support.annotation.NonNull;
+import android.support.v4.media.MediaBrowserCompat;
+import android.support.v4.media.session.MediaControllerCompat;
+import android.text.TextUtils;
 
 import java.util.Arrays;
 
@@ -26,6 +30,7 @@ import java.util.Arrays;
 public class MediaIDHelper {
 
     // Media IDs used on browseable items of MediaBrowser
+    public static final String MEDIA_ID_EMPTY_ROOT = "__EMPTY_ROOT__";
     public static final String MEDIA_ID_ROOT = "__ROOT__";
     public static final String MEDIA_ID_MUSICS_BY_GENRE = "__BY_GENRE__";
     public static final String MEDIA_ID_MUSICS_BY_SEARCH = "__BY_SEARCH__";
@@ -54,7 +59,7 @@ public class MediaIDHelper {
         if (categories != null) {
             for (int i=0; i < categories.length; i++) {
                 if (!isValidCategory(categories[i])) {
-                    throw new IllegalArgumentException("Invalid category: " + categories[0]);
+                    throw new IllegalArgumentException("Invalid category: " + categories[i]);
                 }
                 sb.append(categories[i]);
                 if (i < categories.length - 1) {
@@ -71,8 +76,8 @@ public class MediaIDHelper {
     private static boolean isValidCategory(String category) {
         return category == null ||
                 (
-                    category.indexOf(CATEGORY_SEPARATOR) < 0 &&
-                    category.indexOf(LEAF_SEPARATOR) < 0
+                        category.indexOf(CATEGORY_SEPARATOR) < 0 &&
+                                category.indexOf(LEAF_SEPARATOR) < 0
                 );
     }
 
@@ -131,5 +136,29 @@ public class MediaIDHelper {
         }
         String[] parentHierarchy = Arrays.copyOf(hierarchy, hierarchy.length-1);
         return createMediaID(null, parentHierarchy);
+    }
+
+    /**
+     * Determine if media item is playing (matches the currently playing media item).
+     *
+     * @param context for retrieving the {@link MediaControllerCompat}
+     * @param mediaItem to compare to currently playing {@link MediaBrowserCompat.MediaItem}
+     * @return boolean indicating whether media item matches currently playing media item
+     */
+    public static boolean isMediaItemPlaying(Activity context, MediaBrowserCompat.MediaItem mediaItem) {
+        // Media item is considered to be playing or paused based on the controller's current
+        // media id
+        MediaControllerCompat controller = MediaControllerCompat.getMediaController(context);
+        if (controller != null && controller.getMetadata() != null) {
+            String currentPlayingMediaId = controller.getMetadata().getDescription()
+                    .getMediaId();
+            String itemMusicId = MediaIDHelper.extractMusicIDFromMediaID(
+                    mediaItem.getDescription().getMediaId());
+            if (currentPlayingMediaId != null
+                    && TextUtils.equals(currentPlayingMediaId, itemMusicId)) {
+                return true;
+            }
+        }
+        return false;
     }
 }

@@ -25,5 +25,5 @@
         android:layout_width="match_parent" android:layout_height="match_parent"
         tools:context=".uamp.ui.MusicPlayerActivity" tools:deviceIds="tv"
         tools:ignore="MergeRootFrame"/>
-    
+
 </LinearLayout>

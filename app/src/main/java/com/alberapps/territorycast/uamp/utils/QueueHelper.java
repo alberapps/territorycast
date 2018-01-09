@@ -16,18 +16,22 @@
 
 package com.alberapps.territorycast.uamp.utils;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.media.MediaMetadataCompat;
+import android.support.v4.media.session.MediaControllerCompat;
 import android.support.v4.media.session.MediaSessionCompat;
-
-import java.util.ArrayList;
-import java.util.List;
+import android.text.TextUtils;
 
 import com.alberapps.territorycast.uamp.VoiceSearchParams;
 import com.alberapps.territorycast.uamp.model.MusicProvider;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static com.alberapps.territorycast.uamp.utils.MediaIDHelper.MEDIA_ID_MUSICS_BY_GENRE;
 import static com.alberapps.territorycast.uamp.utils.MediaIDHelper.MEDIA_ID_MUSICS_BY_SEARCH;
+
 
 /**
  * Utility class to help on queue related tasks.
@@ -39,7 +43,7 @@ public class QueueHelper {
     private static final int RANDOM_QUEUE_SIZE = 10;
 
     public static List<MediaSessionCompat.QueueItem> getPlayingQueue(String mediaId,
-            MusicProvider musicProvider) {
+                                                                     MusicProvider musicProvider) {
 
         // extract the browsing hierarchy from the media ID:
         String[] hierarchy = MediaIDHelper.getHierarchy(mediaId);
@@ -70,10 +74,10 @@ public class QueueHelper {
     }
 
     public static List<MediaSessionCompat.QueueItem> getPlayingQueueFromSearch(String query,
-            Bundle queryParams, MusicProvider musicProvider) {
+                                                                               Bundle queryParams, MusicProvider musicProvider) {
 
         LogHelper.d(TAG, "Creating playing queue for musics from search: ", query,
-            " params=", queryParams);
+                " params=", queryParams);
 
         VoiceSearchParams params = new VoiceSearchParams(query, queryParams);
 
@@ -85,7 +89,7 @@ public class QueueHelper {
             return getRandomQueue(musicProvider);
         }
 
-        Iterable<MediaMetadataCompat> result = null;
+        List<MediaMetadataCompat> result = null;
         if (params.isAlbumFocus) {
             result = musicProvider.searchMusicByAlbum(params.album);
         } else if (params.isGenreFocus) {
@@ -103,8 +107,12 @@ public class QueueHelper {
         // Artist (podcast author). Then, we can instead do an unstructured search.
         if (params.isUnstructured || result == null || !result.iterator().hasNext()) {
             // To keep it simple for this example, we do unstructured searches on the
-            // song title only. A real world application could search on other fields as well.
+            // song title and genre only. A real world application could search
+            // on other fields as well.
             result = musicProvider.searchMusicBySongTitle(query);
+            if (result.isEmpty()) {
+                result = musicProvider.searchMusicByGenre(query);
+            }
         }
 
         return convertToQueue(result, MEDIA_ID_MUSICS_BY_SEARCH, query);
@@ -112,7 +120,7 @@ public class QueueHelper {
 
 
     public static int getMusicIndexOnQueue(Iterable<MediaSessionCompat.QueueItem> queue,
-             String mediaId) {
+                                           String mediaId) {
         int index = 0;
         for (MediaSessionCompat.QueueItem item : queue) {
             if (mediaId.equals(item.getDescription().getMediaId())) {
@@ -124,7 +132,7 @@ public class QueueHelper {
     }
 
     public static int getMusicIndexOnQueue(Iterable<MediaSessionCompat.QueueItem> queue,
-             long queueId) {
+                                           long queueId) {
         int index = 0;
         for (MediaSessionCompat.QueueItem item : queue) {
             if (queueId == item.getQueueId()) {
@@ -182,5 +190,62 @@ public class QueueHelper {
 
     public static boolean isIndexPlayable(int index, List<MediaSessionCompat.QueueItem> queue) {
         return (queue != null && index >= 0 && index < queue.size());
+    }
+
+    /**
+     * Determine if two queues contain identical media id's in order.
+     *
+     * @param list1 containing {@link MediaSessionCompat.QueueItem}'s
+     * @param list2 containing {@link MediaSessionCompat.QueueItem}'s
+     * @return boolean indicating whether the queue's match
+     */
+    public static boolean equals(List<MediaSessionCompat.QueueItem> list1,
+                                 List<MediaSessionCompat.QueueItem> list2) {
+        if (list1 == list2) {
+            return true;
+        }
+        if (list1 == null || list2 == null) {
+            return false;
+        }
+        if (list1.size() != list2.size()) {
+            return false;
+        }
+        for (int i=0; i<list1.size(); i++) {
+            if (list1.get(i).getQueueId() != list2.get(i).getQueueId()) {
+                return false;
+            }
+            if (!TextUtils.equals(list1.get(i).getDescription().getMediaId(),
+                    list2.get(i).getDescription().getMediaId())) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Determine if queue item matches the currently playing queue item
+     *
+     * @param context for retrieving the {@link MediaControllerCompat}
+     * @param queueItem to compare to currently playing {@link MediaSessionCompat.QueueItem}
+     * @return boolean indicating whether queue item matches currently playing queue item
+     */
+    public static boolean isQueueItemPlaying(Activity context,
+                                             MediaSessionCompat.QueueItem queueItem) {
+        // Queue item is considered to be playing or paused based on both the controller's
+        // current media id and the controller's active queue item id
+        MediaControllerCompat controller = MediaControllerCompat.getMediaController(context);
+        if (controller != null && controller.getPlaybackState() != null) {
+            long currentPlayingQueueId = controller.getPlaybackState().getActiveQueueItemId();
+            String currentPlayingMediaId = controller.getMetadata().getDescription()
+                    .getMediaId();
+            String itemMusicId = MediaIDHelper.extractMusicIDFromMediaID(
+                    queueItem.getDescription().getMediaId());
+            if (queueItem.getQueueId() == currentPlayingQueueId
+                    && currentPlayingMediaId != null
+                    && TextUtils.equals(currentPlayingMediaId, itemMusicId)) {
+                return true;
+            }
+        }
+        return false;
     }
 }

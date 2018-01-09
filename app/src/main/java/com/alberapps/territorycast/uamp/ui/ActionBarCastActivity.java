@@ -21,20 +21,27 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.app.MediaRouteButton;
+import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
 import com.alberapps.territorycast.R;
 import com.alberapps.territorycast.uamp.utils.LogHelper;
-import com.google.android.libraries.cast.companionlibrary.cast.VideoCastManager;
-import com.google.android.libraries.cast.companionlibrary.cast.callbacks.VideoCastConsumerImpl;
+import com.google.android.gms.cast.framework.CastButtonFactory;
+import com.google.android.gms.cast.framework.CastContext;
+import com.google.android.gms.cast.framework.CastState;
+import com.google.android.gms.cast.framework.CastStateListener;
+import com.google.android.gms.cast.framework.IntroductoryOverlay;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
 
 /**
  * Abstract activity with toolbar, navigation drawer and cast support. Needs to be extended by
@@ -52,9 +59,9 @@ public abstract class ActionBarCastActivity extends AppCompatActivity {
 
     private static final int DELAY_MILLIS = 1000;
 
-    private VideoCastManager mCastManager;
+    private CastContext mCastContext;
     private MenuItem mMediaRouteMenuItem;
-    private ActionBar mToolbar;
+    private Toolbar mToolbar;
     private ActionBarDrawerToggle mDrawerToggle;
     private DrawerLayout mDrawerLayout;
 
@@ -62,27 +69,11 @@ public abstract class ActionBarCastActivity extends AppCompatActivity {
 
     private int mItemToOpenWhenDrawerCloses = -1;
 
-    private final VideoCastConsumerImpl mCastConsumer = new VideoCastConsumerImpl() {
-
+    private CastStateListener mCastStateListener = new CastStateListener() {
         @Override
-        public void onFailed(int resourceId, int statusCode) {
-            LogHelper.d(TAG, "onFailed ", resourceId, " status ", statusCode);
-        }
-
-        @Override
-        public void onConnectionSuspended(int cause) {
-            LogHelper.d(TAG, "onConnectionSuspended() was called with cause: ", cause);
-        }
-
-        @Override
-        public void onConnectivityRecovered() {
-        }
-
-        @Override
-        public void onCastAvailabilityChanged(boolean castPresent) {
-            if (castPresent) {
+        public void onCastStateChanged(int newState) {
+            if (newState != CastState.NO_DEVICES_AVAILABLE) {
                 new Handler().postDelayed(new Runnable() {
-
                     @Override
                     public void run() {
                         if (mMediaRouteMenuItem.isVisible()) {
@@ -93,7 +84,6 @@ public abstract class ActionBarCastActivity extends AppCompatActivity {
                 }, DELAY_MILLIS);
             }
         }
-
     };
 
     private final DrawerLayout.DrawerListener mDrawerListener = new DrawerLayout.DrawerListener() {
@@ -102,7 +92,7 @@ public abstract class ActionBarCastActivity extends AppCompatActivity {
             if (mDrawerToggle != null) mDrawerToggle.onDrawerClosed(drawerView);
             if (mItemToOpenWhenDrawerCloses >= 0) {
                 Bundle extras = ActivityOptions.makeCustomAnimation(
-                    ActionBarCastActivity.this, R.anim.fade_in, R.anim.fade_out).toBundle();
+                        ActionBarCastActivity.this, R.anim.fade_in, R.anim.fade_out).toBundle();
 
                 Class activityClass = null;
                 switch (mItemToOpenWhenDrawerCloses) {
@@ -139,23 +129,24 @@ public abstract class ActionBarCastActivity extends AppCompatActivity {
     };
 
     private final FragmentManager.OnBackStackChangedListener mBackStackChangedListener =
-        new FragmentManager.OnBackStackChangedListener() {
-            @Override
-            public void onBackStackChanged() {
-                updateDrawerToggle();
-            }
-        };
+            new FragmentManager.OnBackStackChangedListener() {
+                @Override
+                public void onBackStackChanged() {
+                    updateDrawerToggle();
+                }
+            };
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         LogHelper.d(TAG, "Activity onCreate");
 
-        // Ensure that Google Play Service is available.
-        VideoCastManager.checkGooglePlayServices(this);
+        int playServicesAvailable =
+                GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(this);
 
-        mCastManager = VideoCastManager.getInstance();
-        mCastManager.reconnectSessionIfPossible();
+        if (playServicesAvailable == ConnectionResult.SUCCESS) {
+            mCastContext = CastContext.getSharedInstance(this);
+        }
     }
 
     @Override
@@ -163,7 +154,7 @@ public abstract class ActionBarCastActivity extends AppCompatActivity {
         super.onStart();
         if (!mToolbarInitialized) {
             throw new IllegalStateException("You must run super.initializeToolbar at " +
-                "the end of your onCreate method");
+                    "the end of your onCreate method");
         }
     }
 
@@ -178,8 +169,10 @@ public abstract class ActionBarCastActivity extends AppCompatActivity {
     @Override
     public void onResume() {
         super.onResume();
-        mCastManager.addVideoCastConsumer(mCastConsumer);
-        mCastManager.incrementUiCounter();
+
+        if (mCastContext != null) {
+            mCastContext.addCastStateListener(mCastStateListener);
+        }
 
         // Whenever the fragment back stack changes, we may need to update the
         // action bar toggle: only top level screens show the hamburger-like icon, inner
@@ -198,8 +191,10 @@ public abstract class ActionBarCastActivity extends AppCompatActivity {
     @Override
     public void onPause() {
         super.onPause();
-        mCastManager.removeVideoCastConsumer(mCastConsumer);
-        mCastManager.decrementUiCounter();
+
+        if (mCastContext != null) {
+            mCastContext.removeCastStateListener(mCastStateListener);
+        }
         getFragmentManager().removeOnBackStackChangedListener(mBackStackChangedListener);
     }
 
@@ -207,7 +202,11 @@ public abstract class ActionBarCastActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
         getMenuInflater().inflate(R.menu.main_uamp, menu);
-        mMediaRouteMenuItem = mCastManager.addMediaRouterButton(menu, R.id.media_route_menu_item);
+
+        if (mCastContext != null) {
+            mMediaRouteMenuItem = CastButtonFactory.setUpMediaRouteButton(getApplicationContext(),
+                    menu, R.id.media_route_menu_item);
+        }
         return true;
     }
 
@@ -254,21 +253,14 @@ public abstract class ActionBarCastActivity extends AppCompatActivity {
     }
 
     protected void initializeToolbar() {
-
-
-        mToolbar = getSupportActionBar();
-
-        /*mToolbar = (Toolbar) findViewById(R.id.toolbar);
+        mToolbar = (Toolbar) findViewById(R.id.toolbar);
         if (mToolbar == null) {
             throw new IllegalStateException("Layout is required to include a Toolbar with id " +
-                "'toolbar'");
-        }*/
+                    "'toolbar'");
+        }
+        mToolbar.inflateMenu(R.menu.main);
 
-
-
-        //mToolbar.inflateMenu(R.menu.main_uamp);
-
-        /*mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (mDrawerLayout != null) {
             NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
             if (navigationView == null) {
@@ -278,16 +270,14 @@ public abstract class ActionBarCastActivity extends AppCompatActivity {
 
             // Create an ActionBarDrawerToggle that will handle opening/closing of the drawer:
             mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout,
-                mToolbar, R.string.open_content_drawer, R.string.close_content_drawer);
+                    mToolbar, R.string.open_content_drawer, R.string.close_content_drawer);
             mDrawerLayout.setDrawerListener(mDrawerListener);
             populateDrawerItems(navigationView);
-            //setSupportActionBar(mToolbar);
+            setSupportActionBar(mToolbar);
             updateDrawerToggle();
-        } //else {*/
-            //setSupportActionBar(mToolbar);
-        //}
-
-
+        } else {
+            setSupportActionBar(mToolbar);
+        }
 
         mToolbarInitialized = true;
     }
@@ -296,7 +286,7 @@ public abstract class ActionBarCastActivity extends AppCompatActivity {
         navigationView.setNavigationItemSelectedListener(
                 new NavigationView.OnNavigationItemSelectedListener() {
                     @Override
-                    public boolean onNavigationItemSelected(MenuItem menuItem) {
+                    public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
                         menuItem.setChecked(true);
                         mItemToOpenWhenDrawerCloses = menuItem.getItemId();
                         mDrawerLayout.closeDrawers();
@@ -331,15 +321,14 @@ public abstract class ActionBarCastActivity extends AppCompatActivity {
      * the Cast icon)
      */
     private void showFtu() {
-        /*Menu menu = mToolbar.getMenu();
+        Menu menu = mToolbar.getMenu();
         View view = menu.findItem(R.id.media_route_menu_item).getActionView();
         if (view != null && view instanceof MediaRouteButton) {
-            IntroductoryOverlay overlay = new IntroductoryOverlay.Builder(this)
-                    .setMenuItem(mMediaRouteMenuItem)
+            IntroductoryOverlay overlay = new IntroductoryOverlay.Builder(this, mMediaRouteMenuItem)
                     .setTitleText(R.string.touch_to_cast)
                     .setSingleTime()
                     .build();
             overlay.show();
-        }*/
+        }
     }
 }

@@ -100,16 +100,16 @@ public final class VoiceSearchParams {
     @Override
     public String toString() {
         return "query=" + query
-            + " isAny=" + isAny
-            + " isUnstructured=" + isUnstructured
-            + " isGenreFocus=" + isGenreFocus
-            + " isArtistFocus=" + isArtistFocus
-            + " isAlbumFocus=" + isAlbumFocus
-            + " isSongFocus=" + isSongFocus
-            + " genre=" + genre
-            + " artist=" + artist
-            + " album=" + album
-            + " song=" + song;
+                + " isAny=" + isAny
+                + " isUnstructured=" + isUnstructured
+                + " isGenreFocus=" + isGenreFocus
+                + " isArtistFocus=" + isArtistFocus
+                + " isAlbumFocus=" + isAlbumFocus
+                + " isSongFocus=" + isSongFocus
+                + " genre=" + genre
+                + " artist=" + artist
+                + " album=" + album
+                + " song=" + song;
     }
 
 }
