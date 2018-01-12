@@ -252,6 +252,7 @@ public abstract class ActionBarCastActivity extends AppCompatActivity {
         mToolbar.setTitle(titleId);
     }
 
+    //*Modificaciones
     protected void initializeToolbar() {
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
         if (mToolbar == null) {
@@ -260,7 +261,7 @@ public abstract class ActionBarCastActivity extends AppCompatActivity {
         }
         mToolbar.inflateMenu(R.menu.main);
 
-        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        /*mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (mDrawerLayout != null) {
             NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
             if (navigationView == null) {
@@ -275,9 +276,11 @@ public abstract class ActionBarCastActivity extends AppCompatActivity {
             populateDrawerItems(navigationView);
             setSupportActionBar(mToolbar);
             updateDrawerToggle();
-        } else {
+        } else {*/
             setSupportActionBar(mToolbar);
-        }
+        //}
+
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         mToolbarInitialized = true;
     }

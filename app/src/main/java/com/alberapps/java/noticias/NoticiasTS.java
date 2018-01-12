@@ -70,6 +70,7 @@ public class NoticiasTS {
 
             Noticias noticias = parser.parserNoticias(urlNoticias.toString());
 
+            String contenidoAux = null;
 
             //Procesar contenidos
 
@@ -80,6 +81,7 @@ public class NoticiasTS {
                 for (int i = 0; i < noticias.getNoticiasList().size(); i++) {
 
                     //Editar la descripcion
+                    contenidoAux = noticias.getNoticiasList().get(i).getDescription();
                     descripcion = (Html.fromHtml(noticias.getNoticiasList().get(i).getDescription())).toString();
                     //int index = descripcion.lastIndexOf("...\n\nLa entrada");
                     //descripcion = descripcion.substring(0, index + 3);
@@ -88,7 +90,14 @@ public class NoticiasTS {
                     //Primera foto disponible
                     String contenido = noticias.getNoticiasList().get(i).getContentEncoded();
 
-                    Document doc = Jsoup.parse(Utilidades.stringToStream(contenido), "UTF-8", URL);
+
+                    if(contenido != null){
+                        contenidoAux = contenido;
+                    } else {
+                        noticias.getNoticiasList().get(i).setContentEncoded(contenidoAux);
+                    }
+
+                    Document doc = Jsoup.parse(Utilidades.stringToStream(contenidoAux), "UTF-8", URL);
 
                     Elements imagen = doc.select("img[src]");
 

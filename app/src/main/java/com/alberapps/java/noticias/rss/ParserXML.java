@@ -137,6 +137,8 @@ public class ParserXML {
     private NoticiaRss readItem(XmlPullParser parser) throws XmlPullParserException, IOException {
         NoticiaRss noticia = new NoticiaRss();
 
+        String[] enclosureAux = null;
+
         parser.require(XmlPullParser.START_TAG, ns, "item");
         while (parser.next() != XmlPullParser.END_TAG) {
             if (parser.getEventType() != XmlPullParser.START_TAG) {
@@ -169,8 +171,9 @@ public class ParserXML {
             } else if (name.equals("itunes:author")) {
                 noticia.setAuthorShort((readText(parser)));
             } else if (name.equals("enclosure")) {
-                noticia.setEnclosureUrl(parser.getAttributeValue(0));
-                noticia.setDuration(parser.getAttributeValue(1));
+                enclosureAux = readEnclosure(parser);
+                noticia.setEnclosureUrl(enclosureAux[0]);
+                //noticia.setDuration(enclosureAux[1]);
             }
 
             else {
@@ -188,6 +191,20 @@ public class ParserXML {
             result = parser.getText();
             parser.nextTag();
         }
+        return result;
+    }
+
+    // For the tags title and summary, extracts their text values.
+    private String[] readEnclosure(XmlPullParser parser) throws IOException, XmlPullParserException {
+        String[] result = {"",""};
+        result[0] = parser.getAttributeValue(0);
+        result[1] = parser.getAttributeValue(1);
+
+        if (parser.next() == XmlPullParser.TEXT) {
+            //result = parser.getText();
+            parser.nextTag();
+        }
+
         return result;
     }
 

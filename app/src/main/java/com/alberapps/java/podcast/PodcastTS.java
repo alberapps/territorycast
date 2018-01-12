@@ -19,13 +19,21 @@
 package com.alberapps.java.podcast;
 
 import android.net.Uri;
+import android.text.Html;
 
 import com.alberapps.java.noticias.rss.Noticias;
 import com.alberapps.java.noticias.rss.ParserXML;
+import com.alberapps.java.util.Utilidades;
+
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.select.Elements;
 
 public class PodcastTS {
 
     //https://www.apuntmedia.es/components/com_n3videochannel/rssfeeder.php?c=territori-sonor
+
+    public static String URL = "https://www.apuntmedia.es";
 
     public Noticias getPodcastFeed() {
 
@@ -45,6 +53,46 @@ public class PodcastTS {
             ParserXML parser = new ParserXML();
 
             noticias = parser.parserNoticias(urlNoticias.toString());
+
+
+            //Procesar contenidos
+            String contenidoAux = null;
+
+            if (noticias != null && noticias.getNoticiasList() != null && !noticias.getNoticiasList().isEmpty()) {
+
+                String descripcion = "";
+
+                for (int i = 0; i < noticias.getNoticiasList().size(); i++) {
+
+                    //Editar la descripcion
+                    contenidoAux = noticias.getNoticiasList().get(i).getDescription();
+                    descripcion = (Html.fromHtml(noticias.getNoticiasList().get(i).getDescription())).toString();
+                    noticias.getNoticiasList().get(i).setDescription(descripcion);
+
+                    //Primera foto disponible
+                    String contenido = noticias.getNoticiasList().get(i).getContentEncoded();
+
+                    if(contenido != null){
+                        contenidoAux = contenido;
+                    } else {
+                        noticias.getNoticiasList().get(i).setContentEncoded(contenidoAux);
+                    }
+
+                    Document doc = Jsoup.parse(Utilidades.stringToStream(contenidoAux), "UTF-8", URL);
+
+                    Elements imagen = doc.select("img[src]");
+
+                    if (imagen != null) {
+
+                        String srcImg = imagen.attr("abs:src");
+                        noticias.getNoticiasList().get(i).setUrlPrimeraImagen(srcImg);
+
+                    }
+
+
+                }
+
+            }
 
 
             return noticias;

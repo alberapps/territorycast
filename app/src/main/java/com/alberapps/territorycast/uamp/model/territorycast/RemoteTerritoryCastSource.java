@@ -29,6 +29,7 @@ import com.alberapps.territorycast.uamp.model.MusicProviderSource;
 import com.alberapps.territorycast.uamp.utils.LogHelper;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
 
 /**
@@ -117,28 +118,38 @@ public class RemoteTerritoryCastSource implements MusicProviderSource {
 
         //String genre = Utilidades.getGroupFromFileName(rss.getGuid());
 
-        String genre = Utilidades.getGroupFromTitle(rss.getTitle());
+        //String genre = Utilidades.getGroupFromTitle(rss.getTitle());
 
 
-        if(genre == null){
+        //if(genre == null){
             //Date pub = Utilidades.getFechaDateRss(rss.getPubDate());
             //String genre = Utilidades.getMonthYearString(pub);
 
-            genre = "enero 2008";
-        }
+//            genre = "enero 2008";
+  //      }
+
+        Date pub = Utilidades.getFechaDateRss(rss.getPubDate());
+        String genre = Utilidades.getMonthYearString(pub);
+
 
 
         String source = rss.getEnclosureUrl();
 
-        String iconUrl = "http://progressive.enetres.net/getPhoenixResource.php?u=7F1AFD6AAF2446E1A0EEDDC3496EAE30&f=images/territori-sonor.jpg";
-
+        //String iconUrl = "http://progressive.enetres.net/getPhoenixResource.php?u=7F1AFD6AAF2446E1A0EEDDC3496EAE30&f=images/territori-sonor.jpg";
+        String iconUrl = rss.getUrlPrimeraImagen();
 
 
         int trackNumber = i + 1;
         int totalTrackCount = total;
 
 
-        int duration = (int) Utilidades.duracionStringtoLong(rss.getDuration());
+        int duration = 0;
+        if(rss.getDuration() != null){
+            duration = (int) Utilidades.duracionStringtoLong(rss.getDuration());
+        } else {
+            duration = (int) Utilidades.duracionStringtoLong("1:00:00");
+        }
+
 
         String id = String.valueOf(title.hashCode());
 

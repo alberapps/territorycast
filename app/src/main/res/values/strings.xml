@@ -22,9 +22,9 @@
 
     <string name="favorite">Favorite</string>
     <string name="error_no_metadata">Unable to retrieve metadata.</string>
-    <string name="browse_genres">Podcasts</string>
-    <string name="browse_genre_subtitle">-</string>
-    <string name="browse_musics_by_genre_subtitle">TerritoryCast %1$s podcasts</string>
+    <string name="browse_genres">Podcasts del programa</string>
+    <string name="browse_genre_subtitle">Agrupados por mes y año de emisión</string>
+    <string name="browse_musics_by_genre_subtitle">Podcasts %1$s</string>
     <string name="random_queue_title">Random music</string>
     <string name="error_no_connection">Cannot connect to server. Please, check your Internet connectivity.</string>
     <string name="error_loading_media">Error Loading Media</string>
