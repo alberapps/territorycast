@@ -23,6 +23,8 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.GridLayoutManager;
@@ -34,11 +36,12 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.alberapps.java.noticias.rss.NoticiaRss;
+import com.alberapps.java.noticias.rss.Noticias;
+import com.alberapps.java.programas.ProgramaService;
 import com.alberapps.territorycast.R;
 
 import java.util.ArrayList;
 import java.util.List;
-
 
 
 /**
@@ -47,7 +50,7 @@ import java.util.List;
  * Activities containing this fragment MUST implement the {@link OnListFragmentInteractionListener}
  * interface.
  */
-public class NoticiasFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener{
+public class NoticiasFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
 
     // TODO: Customize parameter argument names
     private static final String ARG_COLUMN_COUNT = "column-count";
@@ -93,7 +96,6 @@ public class NoticiasFragment extends Fragment implements SwipeRefreshLayout.OnR
         }
 
 
-
     }
 
     @Override
@@ -102,6 +104,16 @@ public class NoticiasFragment extends Fragment implements SwipeRefreshLayout.OnR
         View view = inflater.inflate(R.layout.fragment_noticia_list, container, false);
 
         View recyler = view.findViewById(R.id.list);
+
+        FloatingActionButton nuevoRss = view.findViewById(R.id.nuevo_rss);
+
+        nuevoRss.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Snackbar.make(view, getString(R.string.en_desarrollo), Snackbar.LENGTH_LONG)
+                        .setAction("Action", null).show();
+            }
+        });
 
         // Set the adapter
         if (recyler instanceof RecyclerView) {
@@ -123,11 +135,9 @@ public class NoticiasFragment extends Fragment implements SwipeRefreshLayout.OnR
             cargandoView = view.findViewById(R.id.cargando_view);
 
 
-            consultarNoticias(filtroNoticias);
+            consultarProgramasNoticias(filtroNoticias);
 
         }
-
-
 
 
         return view;
@@ -154,7 +164,7 @@ public class NoticiasFragment extends Fragment implements SwipeRefreshLayout.OnR
     @Override
     public void onRefresh() {
 
-        consultarNoticias(filtroNoticias);
+        consultarProgramasNoticias(filtroNoticias);
 
     }
 
@@ -185,20 +195,19 @@ public class NoticiasFragment extends Fragment implements SwipeRefreshLayout.OnR
 
                 //cargarHeaderNoticiasRss();
 
-                ((MyNoticiaRecyclerViewAdapter)recyclerView.getAdapter()).addAll(noticiasRss);
+                ((MyNoticiaRecyclerViewAdapter) recyclerView.getAdapter()).addAll(noticiasRss);
                 //recyclerView.getAdapter().notifyDataSetChanged();
-
 
 
             } else {
                 Toast.makeText(getActivity(), getString(R.string.error_datos), Toast.LENGTH_SHORT).show();
             }
 
-            if(noticiasRss == null || noticiasRss.isEmpty()){
+            if (noticiasRss == null || noticiasRss.isEmpty()) {
                 recyclerView.setVisibility(View.GONE);
                 emptyView.setVisibility(View.VISIBLE);
                 cargandoView.setVisibility(View.GONE);
-            }else{
+            } else {
                 recyclerView.setVisibility(View.VISIBLE);
                 emptyView.setVisibility(View.GONE);
                 cargandoView.setVisibility(View.GONE);
@@ -214,8 +223,18 @@ public class NoticiasFragment extends Fragment implements SwipeRefreshLayout.OnR
 
     }
 
+    public void consultarProgramasNoticias(int filtro) {
 
-    public void consultarNoticias(int filtro){
+        if (filtro == 1) {
+            consultarNoticias(filtro);
+        } else {
+            consultarProgramas(filtro);
+        }
+
+    }
+
+
+    public void consultarNoticias(int filtro) {
 
 
         filtroNoticias = filtro;
@@ -277,11 +296,46 @@ public class NoticiasFragment extends Fragment implements SwipeRefreshLayout.OnR
         }
 
 
+    }
 
+    /**
+     * Cargar el listado de programas almacenados
+     *
+     * @param filtro
+     */
+    public void consultarProgramas(int filtro) {
+
+        //TODO provisional con carga sin BD
+
+        filtroNoticias = filtro;
+
+        swipeRefresh.setRefreshing(true);
+
+
+        ProgramaService programaService = new ProgramaService();
+
+        Noticias programas = programaService.getProgramas(filtro, getContext());
+
+        if (programas != null && programas.getNoticiasList() != null && !programas.getNoticiasList().isEmpty()) {
+            noticiasRss = programas.getNoticiasList();
+            cargarListadoRss();
+
+        } else {
+
+            noticiasRss = null;
+            // Error al recuperar datos
+            cargarListadoRss();
+
+        }
+
+        swipeRefresh.setRefreshing(false);
 
 
     }
 
 
-
 }
+
+
+
+

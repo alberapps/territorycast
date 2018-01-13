@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
    El Cinturon de Orion - Inoformacion y podcast del programa de radio El Cinturon de Orion de Radio San Vicente
    Copyright (C) 2016 Alberto Montiel
 
@@ -41,7 +40,7 @@
                 android:layout_marginBottom="10dp"
                 android:layout_marginTop="30dp"
                 android:contentDescription="@string/app_name"
-                android:src="@drawable/bg" />
+                android:src="@drawable/ic_launcher_web" />
 
             <LinearLayout
                 android:id="@+id/linearLayout1"
@@ -99,9 +98,9 @@
                 android:id="@+id/textView4"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
                 android:text="@string/app_licencia_desc"
-                android:textAppearance="?android:attr/textAppearanceSmall"
-                android:layout_marginTop="5dp"/>
+                android:textAppearance="?android:attr/textAppearanceSmall" />
 
 
             <ImageView
@@ -112,133 +111,52 @@
                 android:contentDescription="@string/app_licencia_desc"
                 android:src="@drawable/gplv3127" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="center_horizontal"
-                android:text="@string/acercade_info_nuevo"
-                android:textAppearance="?android:attr/textAppearanceSmall"
-                android:layout_marginTop="10dp"/>
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="center_horizontal"
-                android:text="@string/acercade_info_nuevo_cdo"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:layout_marginTop="10dp"
-                android:textStyle="bold"/>
-
-            <ImageView
-                android:id="@+id/imageLogoCDO"
-                android:layout_width="wrap_content"
-                android:layout_height="70dp"
-                android:layout_weight="1"
-                android:contentDescription="Link CDO"
-                android:src="@drawable/bg"
-                android:layout_marginTop="5dp"/>
-
-            <TextView
-                android:id="@+id/textView7"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:autoLink="web"
-                android:text="@string/urlalberapps"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:layout_marginTop="2dp"
-                android:textStyle="bold"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="center_horizontal"
-                android:text="@string/acercade_info_nuevo_2"
-                android:textAppearance="?android:attr/textAppearanceSmall"
-                android:layout_marginTop="5dp"/>
-
-            <TextView
-
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="15dp"
-                android:layout_marginRight="15dp"
-                android:gravity="left"
-                android:text="@string/acercade_info_cdo_1"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:layout_marginTop="5dp"
-                />
-
-            <TextView
-
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="left"
-                android:text="@string/acercade_info_cdo_2"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:layout_marginTop="5dp"
-                android:layout_marginLeft="15dp"
-                android:layout_marginRight="15dp"
-                android:layout_marginBottom="15dp"/>
-
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="left"
-                android:autoLink="web"
                 android:layout_marginLeft="15dp"
                 android:layout_marginRight="15dp"
-                android:layout_marginTop="5dp"
+                android:layout_marginTop="15dp"
+                android:autoLink="web"
                 android:text="@string/referencias"
                 android:textAppearance="?android:attr/textAppearanceMedium"
-                android:textStyle="bold"
-                />
+                android:textStyle="bold" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:autoLink="web"
-                android:paddingBottom="5dip"
                 android:layout_marginLeft="15dp"
                 android:layout_marginRight="15dp"
+                android:autoLink="web"
+                android:paddingBottom="5dip"
                 android:text="@string/referencias_infoapp"
                 android:textAppearance="?android:attr/textAppearanceMedium"
 
                 />
 
 
-
             <TextView
                 android:id="@+id/textViewLegal_d"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="15dp"
                 android:layout_marginTop="10dp"
                 android:autoLink="web"
                 android:text="@string/detalle_licencia"
-                android:textAppearance="?android:attr/textAppearanceSmall"
-                android:layout_marginLeft="15dp"
-                android:layout_marginRight="15dp"
-                />
-
+                android:textAppearance="?android:attr/textAppearanceSmall" />
 
 
             <TextView
                 android:id="@+id/textViewLegal_b"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:autoLink="web"
-                android:text="@string/legal_b"
-                android:textAppearance="?android:attr/textAppearanceSmall"
-                android:layout_marginLeft="15dp"
-                android:layout_marginRight="15dp"/>
-
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
                 android:layout_marginLeft="15dp"
                 android:layout_marginRight="15dp"
                 android:autoLink="web"
-                android:text="@string/aviso_cdo"
+                android:text="@string/legal_b"
                 android:textAppearance="?android:attr/textAppearanceSmall" />
 
 
@@ -246,12 +164,11 @@
                 android:id="@+id/textViewLegal_c"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:autoLink="web"
-                android:text="@string/aviso_legal_analytics"
-                android:textAppearance="?android:attr/textAppearanceSmall"
                 android:layout_marginLeft="15dp"
                 android:layout_marginRight="15dp"
-                />
+                android:autoLink="web"
+                android:text="@string/aviso_legal_analytics"
+                android:textAppearance="?android:attr/textAppearanceSmall" />
 
 
         </LinearLayout>

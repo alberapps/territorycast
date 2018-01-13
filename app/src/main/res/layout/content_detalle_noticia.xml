@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
    El Cinturon de Orion - Inoformacion y podcast del programa de radio El Cinturon de Orion de Radio San Vicente
    Copyright (C) 2016 Alberto Montiel
 
@@ -26,11 +25,25 @@
     tools:context="com.alberapps.territorycast.noticias.detalle.DetalleNoticiaActivity"
     tools:showIn="@layout/activity_detalle_noticia">
 
-    <TextView
-        android:id="@+id/texto_detalle_noticia"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/text_margin"
-        />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/texto_detalle_noticia"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/text_margin" />
+
+        <TextView
+            android:layout_marginTop="10dp"
+            android:id="@+id/texto_detalle_link"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/text_margin"
+            android:autoLink="web"/>
+
+    </LinearLayout>
 
 </android.support.v4.widget.NestedScrollView>

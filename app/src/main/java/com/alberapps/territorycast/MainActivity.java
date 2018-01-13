@@ -41,6 +41,9 @@ import com.alberapps.territorycast.noticias.NoticiasFragment;
 import com.alberapps.territorycast.noticias.detalle.DetalleNoticiaActivity;
 import com.alberapps.territorycast.preferencias.SettingsActivity;
 import com.alberapps.territorycast.uamp.ui.MusicPlayerActivity;
+import com.google.android.gms.analytics.GoogleAnalytics;
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
 
 
 public class MainActivity extends AppCompatActivity
@@ -53,7 +56,7 @@ public class MainActivity extends AppCompatActivity
     /**
      * The {@link Tracker} used to record screen views.
      */
-    //private Tracker mTracker;
+    private Tracker mTracker;
 
     private static final String TAG = "MainActivity";
 
@@ -90,7 +93,7 @@ public class MainActivity extends AppCompatActivity
 
 
         if (preferencias.getBoolean("analytics_on", false)) {
-/*
+
             // Activar
             GoogleAnalytics.getInstance(getApplicationContext()).setAppOptOut(false);
 
@@ -104,14 +107,13 @@ public class MainActivity extends AppCompatActivity
             sendScreen("Noticias - Principal");
 
             Log.d("PRINCIPAL", "Analytics activo");
-*/
+
         } else {
-          //  GoogleAnalytics.getInstance(getApplicationContext()).setAppOptOut(true);
+            GoogleAnalytics.getInstance(getApplicationContext()).setAppOptOut(true);
 
             Log.d("PRINCIPAL", "Analytics inactivo");
 
         }
-
 
 
     }
@@ -120,13 +122,13 @@ public class MainActivity extends AppCompatActivity
     protected void onStart() {
         super.onStart();
 
-        /*if(mTracker == null && preferencias.getBoolean("analytics_on", false)) {
+        if(mTracker == null && preferencias.getBoolean("analytics_on", false)) {
             // [START shared_tracker]
             // Obtain the shared Tracker instance.
             TerritoryCastApplication application = (TerritoryCastApplication) getApplication();
             mTracker = application.getDefaultTracker();
             // [END shared_tracker]
-        }*/
+        }
 
     }
 
@@ -198,18 +200,18 @@ public class MainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_noticias_portada) {
+        if (id == R.id.nav_seleccionar_programa) {
 
             mostrarNoticias(0);
 
-            sendScreen("Noticias - Principal");
+            sendScreen("Principal - Seleccionar Programa");
 
 
-        } else if (id == R.id.nav_noticias_programas) {
+        } else if (id == R.id.nav_noticias_programa_actual) {
 
             mostrarNoticias(1);
 
-            sendScreen("Noticias - Programas");
+            sendScreen("Principal - Noticias RSS");
 
 
         } else if (id == R.id.nav_podcast) {
@@ -253,7 +255,7 @@ public class MainActivity extends AppCompatActivity
 
             item.setChecked(false);
 
-            Utilidades.openWebPage(this, "http://www.alberapps.com/");
+            Utilidades.openWebPage(this, "http://blog.alberapps.com/");
 
         } else if (id == R.id.nav_twitter) {
 
@@ -263,15 +265,15 @@ public class MainActivity extends AppCompatActivity
 
             Utilidades.openWebPage(this, "https://twitter.com/alberapps");
 
-        } else if (id == R.id.nav_facebook) {
+        } /*else if (id == R.id.nav_facebook) {
 
             sendScreen("Link - Facebook");
 
             item.setChecked(false);
 
-            //Utilidades.openWebPage(this, "https://www.facebook.com/El-Cintur%C3%B3n-de-Ori%C3%B3n-361530634013075/");
+            //Utilidades.openWebPage(this, "");
 
-        } else if (id == R.id.nav_appinfo) {
+        }*/ else if (id == R.id.nav_appinfo) {
 
             sendScreen("Appinfo");
 
@@ -293,8 +295,7 @@ public class MainActivity extends AppCompatActivity
 
         NoticiasFragment fragment = (NoticiasFragment) getSupportFragmentManager().findFragmentById(R.id.noticias_fragment);
 
-        fragment.consultarNoticias(filtro);
-
+        fragment.consultarProgramasNoticias(filtro);
 
     }
 
@@ -303,9 +304,16 @@ public class MainActivity extends AppCompatActivity
 
         //Noticia seleccionada
 
-        Intent intent = new Intent(this, DetalleNoticiaActivity.class);
-        intent.putExtra(DetalleNoticiaActivity.EXTRA_NOTICIA, item);
-        startActivity(intent);
+        if(!item.isPrograma()) {
+            Intent intent = new Intent(this, DetalleNoticiaActivity.class);
+            intent.putExtra(DetalleNoticiaActivity.EXTRA_NOTICIA, item);
+            startActivity(intent);
+        }else{
+
+            //TODO guardar programa seleccionado y cargar
+
+            mostrarNoticias(1);
+        }
 
 
     }
@@ -321,13 +329,13 @@ public class MainActivity extends AppCompatActivity
 
     private void sendScreen(String name) {
 
-        /*if(mTracker != null) {
+        if(mTracker != null) {
             // [START screen_view_hit]
             Log.i(TAG, "Setting screen name: " + name);
             mTracker.setScreenName("CDO~" + name);
             mTracker.send(new HitBuilders.ScreenViewBuilder().build());
             // [END screen_view_hit]
-        }*/
+        }
     }
 
 }

@@ -52,6 +52,16 @@ public class NoticiaRss implements Serializable{
 
     private String enclosureUrl;
 
+    private boolean programa = false;
+
+    public boolean isPrograma() {
+        return programa;
+    }
+
+    public void setPrograma(boolean programa) {
+        this.programa = programa;
+    }
+
     public String getEnclosureUrl() {
         return enclosureUrl;
     }

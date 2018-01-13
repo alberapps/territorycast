@@ -3,13 +3,13 @@
 
     <group android:checkableBehavior="single">
         <item
-            android:id="@+id/nav_noticias_portada"
-            android:icon="@drawable/ic_description_black_24dp"
-            android:title="@string/portada" />
+            android:id="@+id/nav_seleccionar_programa"
+            android:icon="@drawable/ic_library_music_black_24dp"
+            android:title="@string/menu_programas" />
         <item
-            android:id="@+id/nav_noticias_programas"
+            android:id="@+id/nav_noticias_programa_actual"
             android:icon="@drawable/ic_format_list_bulleted_black_24dp"
-            android:title="@string/programas" />
+            android:title="@string/menu_programa_actual" />
         <item
             android:id="@+id/nav_podcast"
             android:icon="@drawable/ic_radio_black_24dp"
@@ -39,10 +39,10 @@
                 android:id="@+id/nav_twitter"
                 android:icon="@drawable/ic_comment_black_24dp"
                 android:title="@string/social_twitter" />
-            <item
+            <!--item
                 android:id="@+id/nav_facebook"
                 android:icon="@drawable/ic_thumb_up_black_24dp"
-                android:title="@string/social_facebook" />
+                android:title="@string/social_facebook" /-->
         </menu>
     </item>
 

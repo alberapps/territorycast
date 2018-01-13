@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">TerritoryCast</string>
+    <string name="error_red">Error en la connexió</string>
+    <string name="sin_informacion">Sense informació</string>
+    <string name="browse_genres">Podcasts del programa</string>
+    <string name="browse_genre_subtitle">Agrupats per mes i any d\'emissió</string>
+    <string name="preferencias">Preferències</string>
+    <string name="comunicacion">Comunicació</string>
+    <string name="compartir">Compartir</string>
+    <string name="enviar">Enviar</string>
+    <string name="informacion">El Programa</string>
+    <string name="title_activity_detalle_noticia">Notícia</string>
+    <string name="pref_header_general">General</string>
+    <string name="error_datos">Error en recuperar la informació</string>
+    <string name="menu_programas">Programes</string>
+    <string name="menu_programa_actual">Programa Actual</string>
+    <string name="el_programa">El Programa</string>
+    <string name="cargando">Carregant...</string>
+    <string name="detalle_licencia">"TerritoryCast - Client obert de notícies i reproductor de podcast     Copyright © 2018 Alberto Montiel       This program is free software: you can redistribute it and/or modify    it under the terms of the GNU General Public License as published by    the Free Software Foundation, either version 3 of the License, or    (at your option) any later version.       This program is distributed in the hope that it will be useful,    but WITHOUT ANY WARRANTY; without even the implied warranty of    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the    GNU General Public License for more details.       You should have received a copy of the GNU General Public License    along with this program.  If not, see http://www.gnu.org/licenses.      "</string>
+    <string name="legal_b">Els noms d\'empreses i logotips d\'aquestes o els seus productes, així com les dades obtingudes de les seves pàgines web, són propietat dels seus respectius titulars i són reconeguts per aquesta aplicació.</string>
+    <string name="referencias">Referències</string>
+    <string name="aplicacion">Aplicació</string>
+    <string name="appinfo">Informació</string>
+    <string name="app_licencia_desc">Llicència GNU GPLv3</string>
+    <string name="analytics_on_desc">Permetre l\'enviament d\'estadístiques anònimes d\'ús i control d\'errors</string>
+    <string name="en_desarrollo">No disponible. en desenvolupament</string>
+    <string name="en_desarrollo_2">TerritoryCast està en una fase inicial del desenvolupament. Molt prompte podràs afegir els teus propis rss i podcast, però per ara només n\'hi ha un actiu.</string>
+</resources>

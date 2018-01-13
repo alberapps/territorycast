@@ -78,6 +78,9 @@ public class DetalleNoticiaActivity extends AppCompatActivity {
 
         TextView detalleNoticia = (TextView) findViewById(R.id.texto_detalle_noticia);
 
+        TextView linkNoticia = (TextView) findViewById(R.id.texto_detalle_link);
+
+        linkNoticia.setText(noticia.getLink());
 
         UrlImageParser ip = new UrlImageParser(detalleNoticia, this);
 
@@ -89,7 +92,7 @@ public class DetalleNoticiaActivity extends AppCompatActivity {
         detalleNoticia.setMovementMethod(LinkMovementMethod.getInstance());
 
 
-        setTitle(getString(R.string.detalle_cdo) + " " + Utilidades.getDayMonthString(Utilidades.getFechaDateRss(noticia.getPubDate())));
+        setTitle(Utilidades.getDayMonthString(Utilidades.getFechaDateRss(noticia.getPubDate())));
 
         /*AppCompatImageView view = (AppCompatImageView)findViewById(R.id.cabecera_imagen);
 

@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.alberapps.java.noticias;
+package com.alberapps.java.programas;
 
 import android.app.Activity;
 import android.content.Context;
@@ -25,104 +25,62 @@ import android.graphics.BitmapFactory;
 import android.graphics.Point;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
-import android.net.Uri;
 import android.view.Display;
 
+import com.alberapps.java.noticias.rss.NoticiaRss;
 import com.alberapps.java.noticias.rss.Noticias;
-import com.alberapps.java.noticias.rss.ParserXML;
 import com.alberapps.java.util.Conectividad;
-import com.alberapps.java.util.Utilidades;
-
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.select.Elements;
+import com.alberapps.territorycast.R;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 
-public class NoticiasTS {
-
-    public static String URL = "https://www.apuntmedia.es";
-
-    //https://www.apuntmedia.es/programes/territori-sonor?format=feed&type=rss
-
-    public Noticias getNoticias(int filtro) {
-
-        try {
-
-            Uri.Builder builder = new Uri.Builder();
-            builder.scheme("https").authority("www.apuntmedia.es");
-
-            //if (filtro == 1) {
-
-                builder.appendPath("programes")
-                        .appendPath("territori-sonor")
-                        .appendQueryParameter("format","feed")
-                        .appendQueryParameter("type","rss");
-            //}
+public class ProgramaService {
 
 
+    /**
+     * Carga de listado de programas configurados
+     *
+     * @param filtro
+     * @return
+     */
+    public Noticias getProgramas(int filtro, Context context) {
 
-            Uri urlNoticias = builder.build();
+        //TODO en modo de pruebas, carga manual
 
-            ParserXML parser = new ParserXML();
+        Noticias programas = new Noticias();
 
-            Noticias noticias = parser.parserNoticias(urlNoticias.toString());
+        List<NoticiaRss> programasList = new ArrayList<>();
 
-            String contenidoAux = null;
+        /////////////
 
-            //Procesar contenidos
+        NoticiaRss programaRss2 = new NoticiaRss();
+        programaRss2.setTitle(context.getString(R.string.en_desarrollo_1));
+        programaRss2.setDescription(context.getString(R.string.en_desarrollo_2));
+        //programaRss.setUrlPrimeraImagen("http://progressive.enetres.net/getPhoenixResource.php?u=7F1AFD6AAF2446E1A0EEDDC3496EAE30&f=images/territori-sonor.jpg&flashClient=true&c=001");
 
-            if (noticias != null && noticias.getNoticiasList() != null && !noticias.getNoticiasList().isEmpty()) {
+        programaRss2.setPrograma(true);
 
-                String descripcion = "";
-
-                for (int i = 0; i < noticias.getNoticiasList().size(); i++) {
-
-                    //Editar la descripcion
-                    contenidoAux = noticias.getNoticiasList().get(i).getDescription();
-                    //descripcion = (Html.fromHtml(noticias.getNoticiasList().get(i).getDescription())).toString().replaceAll("\n","");
-
-                    Document doc1 = Jsoup.parse(Utilidades.stringToStream(contenidoAux), "UTF-8", URL);
-                    descripcion = doc1.text();
-
-                    //int index = descripcion.lastIndexOf("...\n\nLa entrada");
-                    //descripcion = descripcion.substring(0, index + 3);
-                    noticias.getNoticiasList().get(i).setDescription(descripcion);
-
-                    //Primera foto disponible
-                    String contenido = noticias.getNoticiasList().get(i).getContentEncoded();
+        programasList.add(programaRss2);
 
 
 
-                    if(contenido != null){
-                        contenidoAux = contenido;
-                    } else {
-                        noticias.getNoticiasList().get(i).setContentEncoded(contenidoAux);
-                    }
+        /////////////
 
-                    Document doc = Jsoup.parse(Utilidades.stringToStream(contenidoAux), "UTF-8", URL);
+        NoticiaRss programaRss = new NoticiaRss();
+        programaRss.setTitle("Territori Sonor © À Punt Mèdia 2017");
+        programaRss.setDescription("Magazín musical diari presentat per Amàlia Garrigós. Un espai dedicat a la música que valora la diversitat d'estils i de llengües.");
+        programaRss.setUrlPrimeraImagen("http://progressive.enetres.net/getPhoenixResource.php?u=7F1AFD6AAF2446E1A0EEDDC3496EAE30&f=images/territori-sonor.jpg&flashClient=true&c=001");
 
-                    Elements imagen = doc.select("img[src]");
+        programaRss.setPrograma(true);
 
-                    if (imagen != null) {
+        programasList.add(programaRss);
 
-                        String srcImg = imagen.attr("abs:src");
-                        noticias.getNoticiasList().get(i).setUrlPrimeraImagen(srcImg);
+        programas.setNoticiasList(programasList);
 
-                    }
-
-
-                }
-
-            }
-
-
-            return noticias;
-
-        } catch (Exception e) {
-            return null;
-        }
+        return programas;
 
     }
 

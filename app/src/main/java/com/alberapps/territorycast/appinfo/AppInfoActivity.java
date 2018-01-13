@@ -26,12 +26,10 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 
-import com.alberapps.territorycast.R;
-
 import com.alberapps.java.util.Utilidades;
+import com.alberapps.territorycast.R;
 
 
 /**
@@ -66,15 +64,6 @@ public class AppInfoActivity extends AppCompatActivity {
         });
 
 
-        ImageView botonCDO = (ImageView) findViewById(R.id.imageLogoCDO);
-        assert botonCDO != null;
-        botonCDO.setOnClickListener(new ImageButton.OnClickListener() {
-            public void onClick(View arg0) {
-
-                Utilidades.openWebPage(AppInfoActivity.this, "http://www.alberapps.com");
-
-            }
-        });
 
 
     }
