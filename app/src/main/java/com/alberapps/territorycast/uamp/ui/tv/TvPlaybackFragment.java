@@ -13,12 +13,51 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-//package com.alberapps.territorycast.uamp.ui.tv;
+package com.alberapps.territorycast.uamp.ui.tv;
+
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.net.Uri;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.SystemClock;
+import android.support.v17.leanback.app.BackgroundManager;
+import android.support.v17.leanback.app.PlaybackOverlayFragment;
+import android.support.v17.leanback.app.PlaybackOverlaySupportFragment;
+import android.support.v17.leanback.widget.AbstractDetailsDescriptionPresenter;
+import android.support.v17.leanback.widget.Action;
+import android.support.v17.leanback.widget.ArrayObjectAdapter;
+import android.support.v17.leanback.widget.ClassPresenterSelector;
+import android.support.v17.leanback.widget.ControlButtonPresenterSelector;
+import android.support.v17.leanback.widget.HeaderItem;
+import android.support.v17.leanback.widget.ListRow;
+import android.support.v17.leanback.widget.ListRowPresenter;
+import android.support.v17.leanback.widget.OnActionClickedListener;
+import android.support.v17.leanback.widget.OnItemViewClickedListener;
+import android.support.v17.leanback.widget.PlaybackControlsRow;
+import android.support.v17.leanback.widget.PlaybackControlsRow.PlayPauseAction;
+import android.support.v17.leanback.widget.PlaybackControlsRow.SkipNextAction;
+import android.support.v17.leanback.widget.PlaybackControlsRow.SkipPreviousAction;
+import android.support.v17.leanback.widget.PlaybackControlsRowPresenter;
+import android.support.v17.leanback.widget.Presenter;
+import android.support.v17.leanback.widget.Row;
+import android.support.v17.leanback.widget.RowPresenter;
+import android.support.v4.media.MediaMetadataCompat;
+import android.support.v4.media.session.MediaControllerCompat;
+import android.support.v4.media.session.MediaSessionCompat;
+import android.support.v4.media.session.PlaybackStateCompat;
+
+import com.alberapps.territorycast.uamp.AlbumArtCache;
+import com.alberapps.territorycast.uamp.utils.LogHelper;
+import com.alberapps.territorycast.uamp.utils.QueueHelper;
+
+import java.util.List;
 
 /*
  * Show details of the currently playing song, along with playback controls and the playing queue.
  */
-/*public class TvPlaybackFragment extends PlaybackOverlaySupportFragment {
+public class TvPlaybackFragment extends PlaybackOverlaySupportFragment {
     private static final String TAG = LogHelper.makeLogTag(TvPlaybackFragment.class);
 
     private static final int BACKGROUND_TYPE = PlaybackOverlayFragment.BG_DARK;
@@ -53,7 +92,7 @@
         mBackgroundManager = BackgroundManager.getInstance(getActivity());
         mBackgroundManager.attach(getActivity().getWindow());
         mHandler = new Handler();
-        mListRowAdapter = new ArrayObjectAdapter(new CardPresenter());
+        mListRowAdapter = new ArrayObjectAdapter(new CardPresenter(getActivity()));
         mPresenterSelector = new ClassPresenterSelector();
         mRowsAdapter = new ArrayObjectAdapter(mPresenterSelector);
 
@@ -78,7 +117,7 @@
                 if (getActivity() == null) {
                     return;
                 }
-                MediaControllerCompat controller = getActivity().getSupportMediaController();
+                MediaControllerCompat controller = MediaControllerCompat.getMediaController(getActivity());
                 if (controller == null) {
                     return;
                 }
@@ -128,31 +167,8 @@
         mPrimaryActionsAdapter.add(mSkipNextAction);
     }
 
-    private boolean equalsQueue(List<MediaSessionCompat.QueueItem> list1,
-                                List<MediaSessionCompat.QueueItem> list2) {
-        if (list1 == list2) {
-            return true;
-        }
-        if (list1 == null || list2 == null) {
-            return false;
-        }
-        if (list1.size() != list2.size()) {
-            return false;
-        }
-        for (int i=0; i<list1.size(); i++) {
-            if (list1.get(i).getQueueId() != list2.get(i).getQueueId()) {
-                return false;
-            }
-            if (!TextUtils.equals(list1.get(i).getDescription().getMediaId(),
-                    list2.get(i).getDescription().getMediaId())) {
-                return false;
-            }
-        }
-        return true;
-    }
-
     protected void updatePlayListRow(List<MediaSessionCompat.QueueItem> playlistQueue) {
-        if (equalsQueue(mPlaylistQueue, playlistQueue)) {
+        if (QueueHelper.equals(mPlaylistQueue, playlistQueue)) {
             // if the playlist queue hasn't changed, we don't need to update it
             return;
         }
@@ -172,7 +188,7 @@
 
         if (mListRow == null) {
             int queueSize = 0;
-            MediaControllerCompat controller = getActivity().getSupportMediaController();
+            MediaControllerCompat controller = MediaControllerCompat.getMediaController(getActivity());
             if (controller != null && controller.getQueue() != null) {
                 queueSize = controller.getQueue().size();
             }
@@ -231,6 +247,7 @@
             mHandler.removeCallbacks(mRunnable);
             setFadingEnabled(false);
         }
+        mPlaybackControlsRow.setCurrentTime((int) mLastPosition);
     }
 
     private void updateAlbumArt(Uri artUri) {
@@ -282,7 +299,7 @@
                 break;
         }
 
-        MediaControllerCompat controller = getActivity().getSupportMediaController();
+        MediaControllerCompat controller = MediaControllerCompat.getMediaController(getActivity());
         updatePlayListRow(controller.getQueue());
         mRowsAdapter.notifyArrayItemRangeChanged(
                 mRowsAdapter.indexOf(mPlaybackControlsRow), 1);
@@ -299,14 +316,19 @@
 
     private final class ItemViewClickedListener implements OnItemViewClickedListener {
         @Override
-        public void onItemClicked(Presenter.ViewHolder itemViewHolder, Object item,
+        public void onItemClicked(Presenter.ViewHolder itemViewHolder, Object clickedItem,
                                   RowPresenter.ViewHolder rowViewHolder, Row row) {
 
-            if (item instanceof MediaSessionCompat.QueueItem) {
-                LogHelper.d(TAG, "item: ", item.toString());
-                MediaControllerCompat controller = getActivity().getSupportMediaController();
-                controller.getTransportControls().skipToQueueItem(
-                        ((MediaSessionCompat.QueueItem) item).getQueueId());
+            if (clickedItem instanceof MediaSessionCompat.QueueItem) {
+                LogHelper.d(TAG, "item: ", clickedItem.toString());
+
+                MediaControllerCompat controller = MediaControllerCompat.getMediaController(getActivity());
+                MediaSessionCompat.QueueItem item = (MediaSessionCompat.QueueItem) clickedItem;
+                if (!QueueHelper.isQueueItemPlaying(getActivity(), item)
+                        || controller.getPlaybackState().getState()
+                        != PlaybackStateCompat.STATE_PLAYING) {
+                    controller.getTransportControls().skipToQueueItem(item.getQueueId());
+                }
             }
         }
     }
@@ -317,4 +339,4 @@
             this.metadata = metadata;
         }
     }
-}*/
+}

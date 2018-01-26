@@ -13,13 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-//package com.alberapps.territorycast.uamp.ui.tv;
+package com.alberapps.territorycast.uamp.ui.tv;
+
+import android.content.ComponentName;
+import android.os.Bundle;
+import android.os.RemoteException;
+import android.support.annotation.NonNull;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.media.MediaBrowserCompat;
+import android.support.v4.media.MediaMetadataCompat;
+import android.support.v4.media.session.MediaControllerCompat;
+import android.support.v4.media.session.PlaybackStateCompat;
+
+import com.alberapps.territorycast.R;
+import com.alberapps.territorycast.uamp.MusicService;
+import com.alberapps.territorycast.uamp.utils.LogHelper;
+
 
 /**
  * Activity used to display details of the currently playing song, along with playback controls
  * and the playing queue.
  */
-/*public class TvPlaybackActivity extends FragmentActivity {
+public class TvPlaybackActivity extends FragmentActivity {
     private static final String TAG = LogHelper.makeLogTag(TvPlaybackActivity.class);
 
     private MediaBrowserCompat mMediaBrowser;
@@ -51,8 +66,9 @@
     protected void onStop() {
         super.onStop();
         LogHelper.d(TAG, "Activity onStop");
-        if (getSupportMediaController() != null) {
-            getSupportMediaController().unregisterCallback(mMediaControllerCallback);
+        MediaControllerCompat controllerCompat = MediaControllerCompat.getMediaController(TvPlaybackActivity.this);
+        if (controllerCompat != null) {
+            controllerCompat.unregisterCallback(mMediaControllerCallback);
         }
         mMediaBrowser.disconnect();
 
@@ -66,7 +82,7 @@
                     try {
                         MediaControllerCompat mediaController = new MediaControllerCompat(
                                 TvPlaybackActivity.this, mMediaBrowser.getSessionToken());
-                        setSupportMediaController(mediaController);
+                        MediaControllerCompat.setMediaController(TvPlaybackActivity.this, mediaController);
                         mediaController.registerCallback(mMediaControllerCallback);
 
                         MediaMetadataCompat metadata = mediaController.getMetadata();
@@ -87,15 +103,16 @@
                 @Override
                 public void onConnectionSuspended() {
                     LogHelper.d(TAG, "onConnectionSuspended");
-                    getSupportMediaController().unregisterCallback(mMediaControllerCallback);
-                    setSupportMediaController(null);
+                    MediaControllerCompat controllerCompat = MediaControllerCompat.getMediaController(TvPlaybackActivity.this);
+                    controllerCompat.unregisterCallback(mMediaControllerCallback);
+                    MediaControllerCompat.setMediaController(TvPlaybackActivity.this, null);
                 }
             };
 
-
-     // Receive callbacks from the MediaController. Here we update our state such as which queue
-     // is being shown, the current title and description and the PlaybackState.
-
+    /**
+     * Receive callbacks from the MediaController. Here we update our state such as which queue
+     * is being shown, the current title and description and the PlaybackState.
+     */
     private final MediaControllerCompat.Callback mMediaControllerCallback =
             new MediaControllerCompat.Callback() {
         @Override
@@ -116,4 +133,4 @@
             mPlaybackFragment.updateMetadata(metadata);
         }
     };
-}*/
+}

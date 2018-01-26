@@ -13,9 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-//package com.alberapps.territorycast.uamp.ui.tv;
+package com.alberapps.territorycast.uamp.ui.tv;
 
-/*
+import android.content.ComponentName;
+import android.os.Bundle;
+import android.os.RemoteException;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.media.MediaBrowserCompat;
+import android.support.v4.media.session.MediaControllerCompat;
+
+import com.alberapps.territorycast.R;
+import com.alberapps.territorycast.uamp.MusicService;
+import com.alberapps.territorycast.uamp.utils.LogHelper;
+
+
 public class TvVerticalGridActivity extends FragmentActivity
         implements TvVerticalGridFragment.MediaFragmentListener {
 
@@ -77,7 +88,7 @@ public class TvVerticalGridActivity extends FragmentActivity
                     try {
                         MediaControllerCompat mediaController = new MediaControllerCompat(
                                 TvVerticalGridActivity.this, mMediaBrowser.getSessionToken());
-                        setSupportMediaController(mediaController);
+                        MediaControllerCompat.setMediaController(TvVerticalGridActivity.this, mediaController);
                         browse();
                     } catch (RemoteException e) {
                         LogHelper.e(TAG, e, "could not connect media controller");
@@ -92,9 +103,8 @@ public class TvVerticalGridActivity extends FragmentActivity
                 @Override
                 public void onConnectionSuspended() {
                     LogHelper.d(TAG, "onConnectionSuspended");
-                    setSupportMediaController(null);
+                    MediaControllerCompat.setMediaController(TvVerticalGridActivity.this, null);
                 }
             };
 
 }
-*/

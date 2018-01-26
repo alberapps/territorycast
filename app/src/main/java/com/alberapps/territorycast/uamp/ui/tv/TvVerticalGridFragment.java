@@ -13,12 +13,33 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-//package com.alberapps.territorycast.uamp.ui.tv;
+package com.alberapps.territorycast.uamp.ui.tv;
+
+import android.app.Activity;
+import android.content.Intent;
+import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.v17.leanback.app.VerticalGridSupportFragment;
+import android.support.v17.leanback.widget.ArrayObjectAdapter;
+import android.support.v17.leanback.widget.ImageCardView;
+import android.support.v17.leanback.widget.OnItemViewClickedListener;
+import android.support.v17.leanback.widget.Presenter;
+import android.support.v17.leanback.widget.Row;
+import android.support.v17.leanback.widget.RowPresenter;
+import android.support.v17.leanback.widget.VerticalGridPresenter;
+import android.support.v4.app.ActivityOptionsCompat;
+import android.support.v4.media.MediaBrowserCompat;
+import android.support.v4.media.session.MediaControllerCompat;
+import android.text.TextUtils;
+
+import com.alberapps.territorycast.uamp.utils.LogHelper;
+import com.alberapps.territorycast.uamp.utils.MediaIDHelper;
+
+import java.util.List;
 
 /*
  * VerticalGridFragment shows a grid of music songs
  */
-/*
 public class TvVerticalGridFragment extends VerticalGridSupportFragment {
     private static final String TAG = LogHelper.makeLogTag(TvVerticalGridFragment.class);
 
@@ -41,7 +62,7 @@ public class TvVerticalGridFragment extends VerticalGridSupportFragment {
         gridPresenter.setNumberOfColumns(NUM_COLUMNS);
         setGridPresenter(gridPresenter);
 
-        mAdapter = new ArrayObjectAdapter(new CardPresenter());
+        mAdapter = new ArrayObjectAdapter(new CardPresenter(getActivity()));
         setAdapter(mAdapter);
         setOnItemViewClickedListener(new ItemViewClickedListener());
     }
@@ -94,12 +115,16 @@ public class TvVerticalGridFragment extends VerticalGridSupportFragment {
         public void onItemClicked(Presenter.ViewHolder itemViewHolder, Object item,
                                   RowPresenter.ViewHolder rowViewHolder, Row row) {
 
-            MediaControllerCompat controller = getActivity().getSupportMediaController();
+            MediaControllerCompat controller = MediaControllerCompat.getMediaController(getActivity());
             if (controller == null) {
                 return;
             }
             MediaControllerCompat.TransportControls controls = controller.getTransportControls();
-            controls.playFromMediaId(((MediaBrowserCompat.MediaItem) item).getMediaId(), null);
+            MediaBrowserCompat.MediaItem mediaItem = (MediaBrowserCompat.MediaItem) item;
+
+            if (!MediaIDHelper.isMediaItemPlaying(getActivity(), mediaItem)) {
+                controls.playFromMediaId(mediaItem.getMediaId(), null);
+            }
 
             Intent intent = new Intent(getActivity(), TvPlaybackActivity.class);
             Bundle bundle = ActivityOptionsCompat.makeSceneTransitionAnimation(
@@ -133,4 +158,4 @@ public class TvVerticalGridFragment extends VerticalGridSupportFragment {
             LogHelper.e(TAG, "browse fragment subscription onError, id=", id);
         }
     };
-}*/
+}

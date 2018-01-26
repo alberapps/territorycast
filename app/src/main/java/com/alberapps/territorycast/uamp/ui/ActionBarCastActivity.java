@@ -25,10 +25,9 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.app.MediaRouteButton;
-import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -39,7 +38,6 @@ import com.google.android.gms.cast.framework.CastButtonFactory;
 import com.google.android.gms.cast.framework.CastContext;
 import com.google.android.gms.cast.framework.CastState;
 import com.google.android.gms.cast.framework.CastStateListener;
-import com.google.android.gms.cast.framework.IntroductoryOverlay;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 
@@ -61,7 +59,7 @@ public abstract class ActionBarCastActivity extends AppCompatActivity {
 
     private CastContext mCastContext;
     private MenuItem mMediaRouteMenuItem;
-    private Toolbar mToolbar;
+    private ActionBar mToolbar;
     private ActionBarDrawerToggle mDrawerToggle;
     private DrawerLayout mDrawerLayout;
 
@@ -243,23 +241,23 @@ public abstract class ActionBarCastActivity extends AppCompatActivity {
     @Override
     public void setTitle(CharSequence title) {
         super.setTitle(title);
-        mToolbar.setTitle(title);
+        //mToolbar.setTitle(title);
     }
 
     @Override
     public void setTitle(int titleId) {
         super.setTitle(titleId);
-        mToolbar.setTitle(titleId);
+        //mToolbar.setTitle(titleId);
     }
 
     //*Modificaciones
     protected void initializeToolbar() {
-        mToolbar = (Toolbar) findViewById(R.id.toolbar);
+        /*mToolbar = (Toolbar) findViewById(R.id.toolbar);
         if (mToolbar == null) {
             throw new IllegalStateException("Layout is required to include a Toolbar with id " +
                     "'toolbar'");
         }
-        mToolbar.inflateMenu(R.menu.main);
+        mToolbar.inflateMenu(R.menu.main);*/
 
         /*mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (mDrawerLayout != null) {
@@ -277,10 +275,12 @@ public abstract class ActionBarCastActivity extends AppCompatActivity {
             setSupportActionBar(mToolbar);
             updateDrawerToggle();
         } else {*/
-            setSupportActionBar(mToolbar);
+            //setSupportActionBar(mToolbar);
         //}
 
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        //getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        mToolbar = getSupportActionBar();
 
         mToolbarInitialized = true;
     }
@@ -324,7 +324,7 @@ public abstract class ActionBarCastActivity extends AppCompatActivity {
      * the Cast icon)
      */
     private void showFtu() {
-        Menu menu = mToolbar.getMenu();
+        /*Menu menu = mToolbar.getMenu();
         View view = menu.findItem(R.id.media_route_menu_item).getActionView();
         if (view != null && view instanceof MediaRouteButton) {
             IntroductoryOverlay overlay = new IntroductoryOverlay.Builder(this, mMediaRouteMenuItem)
@@ -332,6 +332,6 @@ public abstract class ActionBarCastActivity extends AppCompatActivity {
                     .setSingleTime()
                     .build();
             overlay.show();
-        }
+        }*/
     }
 }

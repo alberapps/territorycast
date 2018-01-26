@@ -13,12 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-//package com.alberapps.territorycast.uamp.ui.tv;
+package com.alberapps.territorycast.uamp.ui.tv;
+
+import android.content.ComponentName;
+import android.content.Intent;
+import android.os.Bundle;
+import android.os.RemoteException;
+import android.support.annotation.NonNull;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.media.MediaBrowserCompat;
+import android.support.v4.media.session.MediaControllerCompat;
+
+import com.alberapps.territorycast.R;
+import com.alberapps.territorycast.uamp.MusicService;
+import com.alberapps.territorycast.uamp.utils.LogHelper;
+
 
 /**
  * Main activity for the Android TV user interface.
  */
-/*
 public class TvBrowseActivity extends FragmentActivity
         implements TvBrowseFragment.MediaFragmentListener {
 
@@ -100,7 +113,7 @@ public class TvBrowseActivity extends FragmentActivity
                     try {
                         MediaControllerCompat mediaController = new MediaControllerCompat(
                                 TvBrowseActivity.this, mMediaBrowser.getSessionToken());
-                        setSupportMediaController(mediaController);
+                        MediaControllerCompat.setMediaController(TvBrowseActivity.this, mediaController);
                         navigateToBrowser(mMediaId);
                     } catch (RemoteException e) {
                         LogHelper.e(TAG, e, "could not connect media controller");
@@ -115,8 +128,8 @@ public class TvBrowseActivity extends FragmentActivity
                 @Override
                 public void onConnectionSuspended() {
                     LogHelper.d(TAG, "onConnectionSuspended");
-                    setSupportMediaController(null);
+                    MediaControllerCompat.setMediaController(TvBrowseActivity.this, null);
+
                 }
             };
 }
-*/
