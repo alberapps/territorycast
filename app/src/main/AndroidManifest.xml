@@ -11,6 +11,15 @@
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
 
+    <!-- Set android.software.leanback to false, so the APK will be available to both
+    TV and regular devices. -->
+    <uses-feature
+        android:name="android.software.leanback"
+        android:required="false" />
+    <uses-feature
+        android:name="android.hardware.touchscreen"
+        android:required="false" />
+
 
     <application
         android:name="com.alberapps.territorycast.TerritoryCastApplication"
@@ -19,7 +28,8 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppTheme"
+        android:banner="@drawable/banner_tv">
 
         <activity
             android:name=".MainActivity"
@@ -37,12 +47,7 @@
             </intent-filter>
         </activity>
 
-        <!--uses-feature
-            android:name="android.software.leanback"
-            android:required="false" />
-        <uses-feature
-            android:name="android.hardware.touchscreen"
-            android:required="false" /-->
+
 
         <!--meta-data
             android:name="com.google.android.gms.car.application"
@@ -56,11 +61,18 @@
             android:name=".uamp.ui.MusicPlayerActivity"
             android:label="@string/app_name"
             android:parentActivityName=".MainActivity"
-            android:theme="@style/UAmpAppTheme">
+            android:theme="@style/AppTheme">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".MainActivity" />
+
+            <!-- Use this intent filter to get voice searches, like "Play The Beatles" -->
+            <intent-filter>
+                <action android:name="android.media.action.MEDIA_PLAY_FROM_SEARCH" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
         </activity>
+
 
         <!-- Placeholder activity for phone UI -->
         <activity
@@ -77,27 +89,28 @@
             android:icon="@mipmap/ic_launcher"
             android:theme="@style/UAmpAppTheme" />
 
+
         <!-- Main activity for Android TV user interface -->
-        <!--activity
+        <activity
             android:name=".uamp.ui.tv.TvBrowseActivity"
             android:label="@string/app_name"
-            android:theme="@style/Theme.UAmp.TVLeanback">
+            android:theme="@style/Theme.UAmp.TVLeanback" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
             </intent-filter>
-        </activity-->
-        <!--activity
+        </activity>
+
+        <activity
             android:name=".uamp.ui.tv.TvVerticalGridActivity"
-            android:parentActivityName=".uamp.ui.tv.TvBrowseActivity"
-            android:theme="@style/Theme.UAmp.TVLeanback" /-->
+            android:theme="@style/Theme.UAmp.TVLeanback"
+            android:parentActivityName=".uamp.ui.tv.TvBrowseActivity" />
 
         <!-- Android TV UI when playing a song -->
-        <!--activity
+        <activity
             android:name=".uamp.ui.tv.TvPlaybackActivity"
-            android:parentActivityName=".uamp.ui.tv.TvBrowseActivity"
-            android:theme="@style/Theme.UAmp.TVLeanback" /-->
+            android:theme="@style/Theme.UAmp.TVLeanback"
+            android:parentActivityName=".uamp.ui.tv.TvBrowseActivity" />
 
         <!--
                  (OPTIONAL) use this meta data to indicate which icon should be
