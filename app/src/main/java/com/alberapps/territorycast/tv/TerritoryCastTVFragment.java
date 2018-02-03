@@ -94,7 +94,7 @@ public class TerritoryCastTVFragment extends BrowseFragment {
     }
 
     private void loadRows() {
-        List<Programa> list = ProgramaList.setupMovies();
+        List<Programa> list = ProgramaList.setupProgramas();
 
         mRowsAdapter = new ArrayObjectAdapter(new ListRowPresenter());
         CardPresenter cardPresenter = new CardPresenter();
@@ -125,7 +125,8 @@ public class TerritoryCastTVFragment extends BrowseFragment {
             for (int j = 0; j < cols; j++) {
                 listRowAdapter.add(list.get(j));
             }
-            HeaderItem header = new HeaderItem(i+1, ProgramaList.MOVIE_CATEGORY[i]);
+            //HeaderItem header = new HeaderItem(i+1, ProgramaList.MOVIE_CATEGORY[i]);
+            HeaderItem header = new HeaderItem(i+1, getString(R.string.menu_programas));
             mRowsAdapter.add(new ListRow(header, listRowAdapter));
         }
         /*int i = 0;
@@ -142,13 +143,13 @@ public class TerritoryCastTVFragment extends BrowseFragment {
 */
         //int i = 0;
 
-        HeaderItem gridHeaderPref = new HeaderItem(i+1, "PREFERENCES");
+        HeaderItem gridHeaderPref = new HeaderItem(i+1, getString(R.string.aplicacion));
 
         GridItemPresenter mGridPresenterPref = new GridItemPresenter();
         ArrayObjectAdapter gridRowAdapterPref = new ArrayObjectAdapter(mGridPresenterPref);
         //gridRowAdapterPref.add(getResources().getString(R.string.grid_view));
         //gridRowAdapterPref.add(getString(R.string.error_fragment));
-        gridRowAdapterPref.add(getResources().getString(R.string.personal_settings));
+        gridRowAdapterPref.add(getResources().getString(R.string.appinfo));
         mRowsAdapter.add(new ListRow(gridHeaderPref, gridRowAdapterPref));
 
         setAdapter(mRowsAdapter);
@@ -237,13 +238,20 @@ public class TerritoryCastTVFragment extends BrowseFragment {
                         TVDetailsActivity.SHARED_ELEMENT_NAME).toBundle();
                 getActivity().startActivity(intent, bundle);
             } else if (item instanceof String) {
-                if (((String) item).contains(getString(R.string.error_fragment))) {
+
+                if (((String) item).contains(getString(R.string.appinfo))) {
+                    Intent intent = new Intent(getActivity(), AppInfoDialogActivity.class);
+                    startActivity(intent);
+                }
+
+                /*if (((String) item).contains(getString(R.string.error_fragment))) {
                     Intent intent = new Intent(getActivity(), BrowseErrorActivity.class);
                     startActivity(intent);
                 } else {
                     Toast.makeText(getActivity(), ((String) item), Toast.LENGTH_SHORT)
                             .show();
-                }
+                }*/
+
             }
         }
     }

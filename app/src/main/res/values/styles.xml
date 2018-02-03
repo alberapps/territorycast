@@ -75,5 +75,9 @@
     <style name="Theme.UAmp.TVLeanback" parent="Theme.Leanback">
     </style>
 
+    <style name="Theme.tv.LeanbackDialog" parent="Theme.Leanback.GuidedStep">
+        <item name="guidedActionsBackground">@color/app_guidedstep_dialog_actions_background</item>
+    </style>
+
 
 </resources>

@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">TerritoryCast</string>
 
-    <string name="app_version" translatable="false">0.1</string>
+    <string name="app_version" translatable="false">0.2</string>
 
 
     <string name="navigation_drawer_open" translatable="false">Open navigation drawer</string>
@@ -36,7 +36,7 @@
     <!-- Use the default receiver. To customize a styled media receiver, you can use
          the css and images under <project-root>/docs/cast_styled_receiver -->
 
-    <string name="home_title" translatable="false">Home</string>
+    <string name="home_title" translatable="false">TerritoryCast TV</string>
     <string name="related_content_header" translatable="false">You may also like</string>
     <string name="action_listen" translatable="false">Listen</string>
     <string name="open_content_drawer" translatable="false">Open the main menu</string>
@@ -171,8 +171,8 @@
 
     <string name="en_desarrollo">No disponible. En desarrollo</string>
     <string name="en_desarrollo_1" translatable="false">Hola :-)</string>
-    <string name="en_desarrollo_2">TerritoryCast está en una fase inicial del desarrollo. Muy pronto podrás añadir tus propios rss y podcast, pero por ahora solo hay uno activo.</string>
-    <string name="title_activity_territory_cast_tv">Leanback TerritoryCast</string>
+    <string name="en_desarrollo_2">TerritoryCast está en una fase inicial del desarrollo. Muy pronto podrás añadir tus propios rss y podcast, pero por ahora sólo hay uno activo.</string>
+    <string name="title_activity_territory_cast_tv">TerritoryCast TV</string>
     <string name="browse_title"><![CDATA[TerriroryCast TV]]></string>
     <string name="related_movies">Related Videos</string>
     <string name="grid_view">Grid View</string>

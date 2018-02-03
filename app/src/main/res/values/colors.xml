@@ -27,13 +27,15 @@
     <color name="drawer_item_tint_color">#ff333333</color>
     <color name="fullscreen_secondary_line_color">#E5CCCCCC</color>
     <color name="fullscreen_line_color">#E5FFFFFF</color>
-    <color name="tv_search_button">#ff0097A7</color>
+    <color name="tv_search_button">#81D4FA</color>
     <color name="background_gradient_start">#000000</color>
     <color name="background_gradient_end">#DDDDDD</color>
     <color name="default_background">@color/colorPrimary</color>
     <color name="fastlane_background">@color/colorPrimaryDark</color>
     <color name="search_opaque">@color/tv_search_button</color>
     <color name="selected_background">@color/colorPrimaryDark</color>
+
+    <color name="app_guidedstep_dialog_actions_background">#263238</color>
 
 
 </resources>
