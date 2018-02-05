@@ -40,9 +40,9 @@ public class RemoteTerritoryCastSource implements MusicProviderSource {
 
     private static final String TAG = LogHelper.makeLogTag(RemoteTerritoryCastSource.class);
 
-   /* protected static final String CATALOG_URL =
-        "http://storage.googleapis.com/automotive-media/music.json";
-*/
+    /* protected static final String CATALOG_URL =
+         "http://storage.googleapis.com/automotive-media/music.json";
+ */
     private static final String JSON_MUSIC = "music";
     private static final String JSON_TITLE = "title";
     private static final String JSON_ALBUM = "album";
@@ -76,32 +76,26 @@ public class RemoteTerritoryCastSource implements MusicProviderSource {
             throw new RuntimeException("Could not retrieve music list", e);
         }*/
 
-        PodcastTS podcastTS = new PodcastTS();
+        try {
 
-        Noticias podcasts = podcastTS.getPodcastFeed();
+            PodcastTS podcastTS = new PodcastTS();
 
-        ArrayList<MediaMetadataCompat> tracks = new ArrayList<>();
+            Noticias podcasts = podcastTS.getPodcastFeed();
 
-        for(int i = 0; i< podcasts.getNoticiasList().size();i++){
+            ArrayList<MediaMetadataCompat> tracks = new ArrayList<>();
 
-            tracks.add(buildFromRSS(podcasts.getNoticiasList().get(i), i, podcasts.getNoticiasList().size()));
+            if(podcasts != null && podcasts.getNoticiasList() != null && !podcasts.getNoticiasList().isEmpty()) {
+                for (int i = 0; i < podcasts.getNoticiasList().size(); i++) {
+                    tracks.add(buildFromRSS(podcasts.getNoticiasList().get(i), i, podcasts.getNoticiasList().size()));
+                }
+            }
 
+            return tracks.iterator();
+
+        } catch (Exception e) {
+            LogHelper.e(TAG, e, "Could not retrieve music list");
+            throw new RuntimeException("Could not retrieve music list", e);
         }
-
-        /*for (int i = 0; i< tracks.size();i++){
-
-            if(tracks.get(i).get)
-
-        }*/
-
-
-
-
-
-
-
-
-        return tracks.iterator();
 
 
     }
@@ -122,15 +116,14 @@ public class RemoteTerritoryCastSource implements MusicProviderSource {
 
 
         //if(genre == null){
-            //Date pub = Utilidades.getFechaDateRss(rss.getPubDate());
-            //String genre = Utilidades.getMonthYearString(pub);
+        //Date pub = Utilidades.getFechaDateRss(rss.getPubDate());
+        //String genre = Utilidades.getMonthYearString(pub);
 
 //            genre = "enero 2008";
-  //      }
+        //      }
 
         Date pub = Utilidades.getFechaDateRss(rss.getPubDate());
         String genre = Utilidades.getMonthYearString(pub);
-
 
 
         String source = rss.getEnclosureUrl();
@@ -144,7 +137,7 @@ public class RemoteTerritoryCastSource implements MusicProviderSource {
 
 
         int duration = 0;
-        if(rss.getDuration() != null){
+        if (rss.getDuration() != null) {
             duration = (int) Utilidades.duracionStringtoLong(rss.getDuration());
         } else {
             duration = (int) Utilidades.duracionStringtoLong("1:00:00");
@@ -152,7 +145,6 @@ public class RemoteTerritoryCastSource implements MusicProviderSource {
 
 
         String id = String.valueOf(title.hashCode());
-
 
 
         return new MediaMetadataCompat.Builder()

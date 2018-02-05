@@ -116,7 +116,7 @@ public class MusicProvider {
             }
         });
 
-        //Set<String> ordered = new Iterable<String>(lista);
+        //Set<String> ordered =
 
         return lista;
     }

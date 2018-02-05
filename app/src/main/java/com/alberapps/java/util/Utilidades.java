@@ -209,6 +209,24 @@ public class Utilidades {
 
     }
 
+    public static String getFechaHoraFormato(Date fecha) {
+
+        DateFormat df = new SimpleDateFormat("dd/MM/yyyy HH:mm", getLocaleUsuario());
+
+        String fechaString = null;
+
+        if (fecha != null) {
+
+            fechaString = df.format(fecha);
+
+            return fechaString;
+
+        }
+
+        return null;
+
+    }
+
     public static String getMonthYearString(Date fecha) {
 
         DateFormat df = new SimpleDateFormat("MMMM yyyy", getLocaleUsuario());
@@ -288,7 +306,7 @@ public class Utilidades {
 
 
         try {
-            DateFormat f = new SimpleDateFormat("MMMM yyyy", getLocaleServidor());
+            DateFormat f = new SimpleDateFormat("MMMM yyyy", getLocaleUsuario());
             return f.parse(date);
         } catch (ParseException e) {
             e.printStackTrace();

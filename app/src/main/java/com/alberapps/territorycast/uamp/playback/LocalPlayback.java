@@ -27,6 +27,7 @@ import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.text.TextUtils;
 
+import com.alberapps.territorycast.historial.HistorialManager;
 import com.alberapps.territorycast.uamp.MusicService;
 import com.alberapps.territorycast.uamp.model.MusicProvider;
 import com.alberapps.territorycast.uamp.model.MusicProviderSource;
@@ -202,6 +203,12 @@ public final class LocalPlayback implements Playback {
                                     item.getDescription().getMediaId()));
 
             String source = track.getString(MusicProviderSource.CUSTOM_METADATA_TRACK_SOURCE);
+
+            //Historial
+            HistorialManager historial = new HistorialManager(mContext);
+            historial.saveHistorial(track);
+            //
+
             if (source != null) {
                 source = source.replaceAll(" ", "%20"); // Escape spaces for URLs
             }

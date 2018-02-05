@@ -19,6 +19,7 @@
 package com.alberapps.territorycast;
 
 import android.app.Application;
+import android.support.multidex.MultiDexApplication;
 
 import com.alberapps.territorycast.uamp.ui.FullScreenPlayerActivity;
 import com.google.android.gms.analytics.GoogleAnalytics;
@@ -31,7 +32,7 @@ import com.google.android.libraries.cast.companionlibrary.cast.VideoCastManager;
  * This is a subclass of {@link Application} used to provide shared objects for this app, such as
  * the {@link Tracker}.
  */
-public class TerritoryCastApplication extends Application {
+public class TerritoryCastApplication extends MultiDexApplication {
     private Tracker mTracker;
 
     /**

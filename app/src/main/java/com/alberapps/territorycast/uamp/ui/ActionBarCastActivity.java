@@ -70,7 +70,7 @@ public abstract class ActionBarCastActivity extends AppCompatActivity {
     private CastStateListener mCastStateListener = new CastStateListener() {
         @Override
         public void onCastStateChanged(int newState) {
-            if (newState != CastState.NO_DEVICES_AVAILABLE) {
+            if (newState != CastState.NO_DEVICES_AVAILABLE && mMediaRouteMenuItem != null) {
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {

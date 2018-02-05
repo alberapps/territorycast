@@ -33,6 +33,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.alberapps.territorycast.R;
+import com.alberapps.territorycast.historial.HistorialManager;
 import com.alberapps.territorycast.uamp.utils.MediaIDHelper;
 
 public class MediaItemViewHolder {
@@ -50,6 +51,8 @@ public class MediaItemViewHolder {
     private TextView mTitleView;
     private TextView mDescriptionView;
 
+    private TextView mRepDateView;
+
     // Returns a view for use in media item list.
     static View setupListView(Activity activity, View convertView, ViewGroup parent,
                               MediaBrowserCompat.MediaItem item) {
@@ -58,6 +61,8 @@ public class MediaItemViewHolder {
         }
 
         MediaItemViewHolder holder;
+
+        HistorialManager historial = new HistorialManager(activity);
 
         Integer cachedState = STATE_INVALID;
 
@@ -68,6 +73,9 @@ public class MediaItemViewHolder {
             holder.mImageView = (ImageView) convertView.findViewById(R.id.play_eq);
             holder.mTitleView = (TextView) convertView.findViewById(R.id.title);
             holder.mDescriptionView = (TextView) convertView.findViewById(R.id.description);
+
+            holder.mRepDateView = (TextView) convertView.findViewById(R.id.repDate);
+
             convertView.setTag(holder);
         } else {
             holder = (MediaItemViewHolder) convertView.getTag();
@@ -86,11 +94,25 @@ public class MediaItemViewHolder {
             if (drawable != null) {
                 holder.mImageView.setImageDrawable(drawable);
                 holder.mImageView.setVisibility(View.VISIBLE);
+
+                holder.mRepDateView.setVisibility(View.VISIBLE);
+
+
+                historial.isInHistorial(item.getMediaId(), holder.mRepDateView);
+
+                //holder.mRepDateView.setText("20");
+
             } else {
                 holder.mImageView.setVisibility(View.GONE);
+
+                holder.mRepDateView.setVisibility(View.GONE);
             }
             convertView.setTag(R.id.tag_mediaitem_state_cache, state);
         }
+
+
+
+
 
         return convertView;
     }
