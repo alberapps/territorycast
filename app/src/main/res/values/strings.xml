@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">TerritoryCast</string>
 
-    <string name="app_version" translatable="false">0.2</string>
+    <string name="app_version" translatable="false">0.3</string>
 
 
     <string name="navigation_drawer_open" translatable="false">Open navigation drawer</string>
@@ -18,7 +18,7 @@
 
     <string name="favorite" translatable="false">Favorite</string>
     <string name="error_no_metadata" translatable="false">Unable to retrieve metadata.</string>
-    <string name="browse_genres">Podcasts del programa</string>
+    <string name="browse_genres">Podcasts</string>
     <string name="browse_genre_subtitle">Agrupados por mes y año de emisión</string>
     <string name="browse_musics_by_genre_subtitle" translatable="false">Podcasts %1$s</string>
     <string name="random_queue_title" translatable="false">Random music</string>
@@ -172,8 +172,8 @@
     <string name="en_desarrollo">No disponible. En desarrollo</string>
     <string name="en_desarrollo_1" translatable="false">Hola :-)</string>
     <string name="en_desarrollo_2">TerritoryCast está en una fase inicial del desarrollo. Muy pronto podrás añadir tus propios rss y podcast, pero por ahora sólo hay uno activo.</string>
-    <string name="title_activity_territory_cast_tv" translatable="false">TerritoryCast TV</string>
-    <string name="browse_title" translatable="false"><![CDATA[TerriroryCast TV]]></string>
+    <string name="title_activity_territory_cast_tv" translatable="false">TerritoryCast</string>
+    <string name="browse_title" translatable="false"><![CDATA[TerriroryCast]]></string>
     <string name="related_movies" translatable="false">Related Videos</string>
     <string name="grid_view" translatable="false">Grid View</string>
     <string name="error_fragment" translatable="false">Error Fragment</string>
@@ -184,7 +184,7 @@
     <string name="rent_2" translatable="false">From $1.99</string>
     <string name="buy_1" translatable="false">Buy and Own</string>
     <string name="buy_2" translatable="false">AT $9.99</string>
-    <string name="programa" translatable="false">Movie</string>
+    <string name="programa" translatable="false">Programa</string>
     <string name="should_start" translatable="false">shouldStart</string>
 
     <!-- Error messages -->
@@ -196,5 +196,14 @@
 
 
     <string name="nuevo_rss" translatable="false">Nuevo RSS Feed</string>
+
+    <string name="titulo" translatable="false">Título</string>
+    <string name="descripcion" translatable="false">Descripción</string>
+    <string name="imagen" translatable="false">Imagen</string>
+    <string name="urlNoticias" translatable="false">Url Feed Noticias</string>
+    <string name="urlPodcast" translatable="false">Url Feed Podcast</string>
+    <string name="sinprogramas" translatable="false">Añade un nuevo programa para acceder a esta función</string>
+    <string name="nuevo_programa" translatable="false">Nuevo Programa</string>
+    <string name="nuevo_programa_desc" translatable="false">Introduce los datos del nuevo feed de noticias Podcast</string>
 
 </resources>

@@ -32,6 +32,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.alberapps.java.noticias.rss.NoticiaRss;
 import com.alberapps.java.util.Conectividad;
@@ -185,8 +186,14 @@ public class MainActivity extends AppCompatActivity
 
             sendScreen("Podcast");
 
-            Intent podcast = new Intent(this, MusicPlayerActivity.class);
-            startActivity(podcast);
+            NoticiasFragment noticiasFragment = (NoticiasFragment) getSupportFragmentManager().findFragmentById(R.id.noticias_fragment);
+
+            if(noticiasFragment.programasList != null && !noticiasFragment.programasList.isEmpty()){
+                Intent podcast = new Intent(this, MusicPlayerActivity.class);
+                startActivity(podcast);
+            } else {
+                Toast.makeText(this, getString(R.string.sinprogramas), Toast.LENGTH_LONG).show();
+            }
 
             return true;
         }
@@ -222,8 +229,17 @@ public class MainActivity extends AppCompatActivity
 
             sendScreen("Podcasts - Principal");
 
-            Intent podcast = new Intent(this, MusicPlayerActivity.class);
-            startActivity(podcast);
+            NoticiasFragment noticiasFragment = (NoticiasFragment) getSupportFragmentManager().findFragmentById(R.id.noticias_fragment);
+
+            if(noticiasFragment.programasList != null && !noticiasFragment.programasList.isEmpty()){
+                Intent podcast = new Intent(this, MusicPlayerActivity.class);
+                startActivity(podcast);
+            } else {
+                Toast.makeText(this, getString(R.string.sinprogramas), Toast.LENGTH_LONG).show();
+            }
+
+
+
 
         } /*else if (id == R.id.nav_el_programa) {
 

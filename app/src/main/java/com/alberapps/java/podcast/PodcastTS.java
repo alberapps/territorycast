@@ -18,16 +18,20 @@
  */
 package com.alberapps.java.podcast;
 
-import android.net.Uri;
+import android.content.Context;
 import android.text.Html;
 
 import com.alberapps.java.noticias.rss.Noticias;
 import com.alberapps.java.noticias.rss.ParserXML;
 import com.alberapps.java.util.Utilidades;
+import com.alberapps.territorycast.programas.Programa;
+import com.alberapps.territorycast.programas.ProgramasManager;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
+
+import java.util.List;
 
 public class PodcastTS {
 
@@ -35,24 +39,39 @@ public class PodcastTS {
 
     public static String URL = "https://www.apuntmedia.es";
 
+    private Context context = null;
+
+    public PodcastTS(Context contextParam){
+        context = contextParam;
+    }
+
     public Noticias getPodcastFeed() {
 
         try {
 
-            Uri.Builder builder = new Uri.Builder();
+            ProgramasManager programasManager = new ProgramasManager(context);
+
+            List<Programa> programas = programasManager.getProgramas();
+
+            if(programas != null && programas.isEmpty()){
+                return null;
+            }
+
+
+            /*Uri.Builder builder = new Uri.Builder();
             builder.scheme("https").authority("www.apuntmedia.es")
                     .appendPath("components")
                     .appendPath("com_n3videochannel")
                     .appendPath("rssfeeder.php")
                     .appendQueryParameter("c", "territori-sonor");
 
-            Uri urlNoticias = builder.build();
+            Uri urlNoticias = builder.build();*/
 
             Noticias noticias = null;
 
             ParserXML parser = new ParserXML();
 
-            noticias = parser.parserNoticias(urlNoticias.toString());
+            noticias = parser.parserNoticias(programas.get(0).getUrlRssPodcast());
 
 
             //Procesar contenidos
@@ -85,7 +104,11 @@ public class PodcastTS {
                     if (imagen != null) {
 
                         String srcImg = imagen.attr("abs:src");
-                        noticias.getNoticiasList().get(i).setUrlPrimeraImagen(srcImg);
+                        if(srcImg != null && (srcImg.endsWith("jpg") || srcImg.endsWith("png") || srcImg.endsWith("JPG") || srcImg.endsWith("PNG"))) {
+                            noticias.getNoticiasList().get(i).setUrlPrimeraImagen(srcImg);
+                        }else {
+                            noticias.getNoticiasList().get(i).setUrlPrimeraImagen("https://upload.wikimedia.org/wikipedia/commons/thumb/f/fb/Orion_Watching_Over_ALMA.jpg/1024px-Orion_Watching_Over_ALMA.jpg");
+                        }
 
                     }
 

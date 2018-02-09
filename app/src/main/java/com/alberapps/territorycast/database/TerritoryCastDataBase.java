@@ -14,9 +14,9 @@ import android.support.annotation.VisibleForTesting;
 /**
  * The Room database.
  */
-@Database(entities = {HistorialPodcast.class}, version = 1)
+@Database(entities = {HistorialPodcast.class, Programas.class}, version = 1)
 @TypeConverters(DataConverters.class)
-public abstract class HistorialPodcastDataBase extends RoomDatabase {
+public abstract class TerritoryCastDataBase extends RoomDatabase {
 
     /**
      * @return The DAO for the HistorialPodcast table.
@@ -24,10 +24,14 @@ public abstract class HistorialPodcastDataBase extends RoomDatabase {
     @SuppressWarnings("WeakerAccess")
     public abstract HistorialPodcastDAO historialPodcast();
 
+    @SuppressWarnings("WeakerAccess")
+    public abstract ProgramasDAO programas();
+
+
     /**
      * The only instance
      */
-    private static HistorialPodcastDataBase sInstance;
+    private static TerritoryCastDataBase sInstance;
 
     /**
      * Gets the singleton instance of SampleDatabase.
@@ -35,10 +39,10 @@ public abstract class HistorialPodcastDataBase extends RoomDatabase {
      * @param context The context.
      * @return The singleton instance of SampleDatabase.
      */
-    public static synchronized HistorialPodcastDataBase getInstance(Context context) {
+    public static synchronized TerritoryCastDataBase getInstance(Context context) {
         if (sInstance == null) {
             sInstance = Room
-                    .databaseBuilder(context.getApplicationContext(), HistorialPodcastDataBase.class, "ex")
+                    .databaseBuilder(context.getApplicationContext(), TerritoryCastDataBase.class, "ex")
                     .build();
             //sInstance.populateInitialData();
         }
@@ -53,7 +57,7 @@ public abstract class HistorialPodcastDataBase extends RoomDatabase {
     @VisibleForTesting
     public static void switchToInMemory(Context context) {
         sInstance = Room.inMemoryDatabaseBuilder(context.getApplicationContext(),
-                HistorialPodcastDataBase.class).build();
+                TerritoryCastDataBase.class).build();
     }
 
     /**

@@ -14,6 +14,7 @@
 
 package com.alberapps.territorycast.tv;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
@@ -41,6 +42,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.alberapps.territorycast.R;
+import com.alberapps.territorycast.tasks.LoadProgramasAsyncTask;
 import com.alberapps.territorycast.uamp.ui.tv.TvBrowseActivity;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
@@ -69,6 +71,10 @@ public class TerritoryCastTVFragment extends BrowseFragment {
     private Timer mBackgroundTimer;
     private String mBackgroundUri;
     private BackgroundManager mBackgroundManager;
+    public List<com.alberapps.territorycast.programas.Programa> programasList = null;
+
+
+    private boolean limite = false;
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -79,7 +85,8 @@ public class TerritoryCastTVFragment extends BrowseFragment {
 
         setupUIElements();
 
-        loadRows();
+        consultarProgramas();
+        //loadRows();
 
         setupEventListeners();
     }
@@ -93,8 +100,58 @@ public class TerritoryCastTVFragment extends BrowseFragment {
         }
     }
 
+    /**
+     * Cargar el listado de programas almacenados
+     *
+
+     */
+    @SuppressLint("NewApi")
+    public void consultarProgramas() {
+
+        //TODO provisional con carga sin BD
+
+        LoadProgramasAsyncTask.LoadProgramasAsyncTaskResponder loadProgramasAsyncTaskResponder = new LoadProgramasAsyncTask.LoadProgramasAsyncTaskResponder() {
+            public void ProgramasLoaded(List<com.alberapps.territorycast.programas.Programa> programas) {
+
+                if (programas != null && !programas.isEmpty()) {
+
+                    limite = true;
+
+                    programasList = programas;
+
+                    loadRows();
+
+                } else {
+
+                    //noticiasRss = null;
+                    // Error al recuperar datos
+                    //cargarListadoRss();
+
+                    loadRows();
+
+                    Toast.makeText(getActivity().getApplicationContext(), getString(R.string.sinprogramas), Toast.LENGTH_LONG).show();
+
+
+                }
+
+
+            }
+        };
+
+
+        new LoadProgramasAsyncTask(loadProgramasAsyncTaskResponder).execute(getContext());
+
+
+    }
+
+
     private void loadRows() {
-        List<Programa> list = ProgramaList.setupProgramas();
+
+        List<Programa> list = null;
+
+        if(programasList != null && !programasList.isEmpty()) {
+            list = ProgramaList.setupProgramas(programasList);
+        }
 
         mRowsAdapter = new ArrayObjectAdapter(new ListRowPresenter());
         CardPresenter cardPresenter = new CardPresenter();
@@ -117,18 +174,25 @@ public class TerritoryCastTVFragment extends BrowseFragment {
         mRowsAdapter.add(new ListRow(gridHeader1, gridRowAdapter1));
 
 
-        for (i = 0; i < rows; i++) {
-            if (i != 0) {
-                Collections.shuffle(list);
+        if(list != null && !list.isEmpty()) {
+
+            for (i = 0; i < rows; i++) {
+                if (i != 0) {
+                    Collections.shuffle(list);
+                }
+                ArrayObjectAdapter listRowAdapter = new ArrayObjectAdapter(cardPresenter);
+                for (int j = 0; j < cols; j++) {
+                    listRowAdapter.add(list.get(j));
+                }
+                //HeaderItem header = new HeaderItem(i+1, ProgramaList.MOVIE_CATEGORY[i]);
+                HeaderItem header = new HeaderItem(i + 1, getString(R.string.menu_programas));
+                mRowsAdapter.add(new ListRow(header, listRowAdapter));
             }
-            ArrayObjectAdapter listRowAdapter = new ArrayObjectAdapter(cardPresenter);
-            for (int j = 0; j < cols; j++) {
-                listRowAdapter.add(list.get(j));
-            }
-            //HeaderItem header = new HeaderItem(i+1, ProgramaList.MOVIE_CATEGORY[i]);
-            HeaderItem header = new HeaderItem(i+1, getString(R.string.menu_programas));
-            mRowsAdapter.add(new ListRow(header, listRowAdapter));
+
+        } else {
+            i=1;
         }
+
         /*int i = 0;
 
         HeaderItem gridHeader = new HeaderItem(i, "PREFERENCES");
@@ -149,7 +213,9 @@ public class TerritoryCastTVFragment extends BrowseFragment {
         ArrayObjectAdapter gridRowAdapterPref = new ArrayObjectAdapter(mGridPresenterPref);
         //gridRowAdapterPref.add(getResources().getString(R.string.grid_view));
         //gridRowAdapterPref.add(getString(R.string.error_fragment));
+        gridRowAdapterPref.add(getResources().getString(R.string.nuevo_programa));
         gridRowAdapterPref.add(getResources().getString(R.string.appinfo));
+
         mRowsAdapter.add(new ListRow(gridHeaderPref, gridRowAdapterPref));
 
         setAdapter(mRowsAdapter);
@@ -242,7 +308,25 @@ public class TerritoryCastTVFragment extends BrowseFragment {
                 if (((String) item).contains(getString(R.string.appinfo))) {
                     Intent intent = new Intent(getActivity(), AppInfoDialogActivity.class);
                     startActivity(intent);
+                } else if (((String) item).contains(getString(R.string.nuevo_programa))) {
+                    //Intent intent = new Intent(getActivity(), AppInfoDialogActivity.class);
+                    //startActivity(intent);
+
+                    if(!limite) {
+                        //NuevoPrograma nuevoPrograma = new NuevoPrograma(getActivity());
+                        //nuevoPrograma.cargarModalNuevoPrograma();
+
+                        Intent intent = new Intent(getActivity(), NuevoDialogActivity.class);
+                        startActivity(intent);
+
+
+                    } else {
+                        Toast.makeText(getActivity().getApplicationContext(), getString(R.string.en_desarrollo), Toast.LENGTH_LONG).show();
+                    }
+
                 }
+
+
 
                 /*if (((String) item).contains(getString(R.string.error_fragment))) {
                     Intent intent = new Intent(getActivity(), BrowseErrorActivity.class);

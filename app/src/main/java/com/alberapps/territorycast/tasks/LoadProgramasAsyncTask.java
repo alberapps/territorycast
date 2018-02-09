@@ -18,11 +18,11 @@
  */
 package com.alberapps.territorycast.tasks;
 
+import android.content.Context;
 import android.os.AsyncTask;
 
-import com.alberapps.java.noticias.NoticiasTS;
-import com.alberapps.java.noticias.rss.NoticiaRss;
 import com.alberapps.territorycast.programas.Programa;
+import com.alberapps.territorycast.programas.ProgramasManager;
 
 import java.util.List;
 
@@ -30,47 +30,46 @@ import java.util.List;
 /**
  * Tarea asincrona que se encarga de consultar las noticias rss del tram
  */
-public class LoadNoticiasRssAsyncTask extends AsyncTask<Object, Void, List<NoticiaRss>> {
+public class LoadProgramasAsyncTask extends AsyncTask<Object, Void, List<Programa>> {
 
 
-    public interface LoadNoticiasRssAsyncTaskResponder {
-        public void noticiasRssLoaded(List<NoticiaRss> noticias);
+    public interface LoadProgramasAsyncTaskResponder {
+        public void ProgramasLoaded(List<Programa> programas);
     }
 
-    private LoadNoticiasRssAsyncTaskResponder responder;
+    private LoadProgramasAsyncTaskResponder responder;
 
 
-    public LoadNoticiasRssAsyncTask(LoadNoticiasRssAsyncTaskResponder responder) {
+    public LoadProgramasAsyncTask(LoadProgramasAsyncTaskResponder responder) {
         this.responder = responder;
     }
 
 
     @Override
-    protected List<NoticiaRss> doInBackground(Object... datos) {
-        List<NoticiaRss> noticiasList = null;
+    protected List<Programa> doInBackground(Object... datos) {
 
-        Integer filtro = (Integer)datos[0];
+        List<Programa> programasList = null;
 
-        Programa programa = (Programa) datos[1];
+        Context context = (Context) datos[0];
 
         try {
 
-            NoticiasTS noticiasTS = new NoticiasTS();
+            ProgramasManager programasManager = new ProgramasManager(context);
 
-            noticiasList = noticiasTS.getNoticias(filtro, programa).getNoticiasList();
+            programasList = programasManager.getProgramas();
 
         } catch (Exception e) {
             return null;
         }
 
-        return noticiasList;
+        return programasList;
     }
 
 
     @Override
-    protected void onPostExecute(List<NoticiaRss> result) {
+    protected void onPostExecute(List<Programa> result) {
         if (responder != null) {
-            responder.noticiasRssLoaded(result);
+            responder.ProgramasLoaded(result);
         }
 
 

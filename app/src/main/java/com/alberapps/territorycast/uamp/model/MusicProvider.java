@@ -16,6 +16,7 @@
 
 package com.alberapps.territorycast.uamp.model;
 
+import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -71,8 +72,8 @@ public class MusicProvider {
         void onMusicCatalogReady(boolean success);
     }
 
-    public MusicProvider() {
-        this(new RemoteTerritoryCastSource());
+    public MusicProvider(Context context) {
+        this(new RemoteTerritoryCastSource(context));
     }
     public MusicProvider(MusicProviderSource source) {
         mSource = source;

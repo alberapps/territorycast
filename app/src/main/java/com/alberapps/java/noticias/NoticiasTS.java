@@ -25,13 +25,13 @@ import android.graphics.BitmapFactory;
 import android.graphics.Point;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
-import android.net.Uri;
 import android.view.Display;
 
 import com.alberapps.java.noticias.rss.Noticias;
 import com.alberapps.java.noticias.rss.ParserXML;
 import com.alberapps.java.util.Conectividad;
 import com.alberapps.java.util.Utilidades;
+import com.alberapps.territorycast.programas.Programa;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -46,11 +46,11 @@ public class NoticiasTS {
 
     //https://www.apuntmedia.es/programes/territori-sonor?format=feed&type=rss
 
-    public Noticias getNoticias(int filtro) {
+    public Noticias getNoticias(int filtro, Programa programa) {
 
         try {
 
-            Uri.Builder builder = new Uri.Builder();
+            /*Uri.Builder builder = new Uri.Builder();
             builder.scheme("https").authority("www.apuntmedia.es");
 
             //if (filtro == 1) {
@@ -65,9 +65,11 @@ public class NoticiasTS {
 
             Uri urlNoticias = builder.build();
 
+            */
+
             ParserXML parser = new ParserXML();
 
-            Noticias noticias = parser.parserNoticias(urlNoticias.toString());
+            Noticias noticias = parser.parserNoticias(programa.getUrlRssNoticias());
 
             String contenidoAux = null;
 

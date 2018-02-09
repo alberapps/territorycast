@@ -8,7 +8,7 @@ import android.widget.TextView;
 
 import com.alberapps.java.util.Utilidades;
 import com.alberapps.territorycast.database.HistorialPodcast;
-import com.alberapps.territorycast.database.HistorialPodcastDataBase;
+import com.alberapps.territorycast.database.TerritoryCastDataBase;
 import com.alberapps.territorycast.uamp.model.MusicProviderSource;
 
 import java.util.Date;
@@ -51,7 +51,7 @@ public class HistorialManager {
 
                 HistorialPodcast podcast1 = (HistorialPodcast) datos[0];
 
-                long id = HistorialPodcastDataBase.getInstance(context).historialPodcast().insert(podcast1);
+                long id = TerritoryCastDataBase.getInstance(context).historialPodcast().insert(podcast1);
 
                 return id;
             }
@@ -83,7 +83,7 @@ public class HistorialManager {
 
                 HistorialPodcast podcast1 = (HistorialPodcast) datos[0];
 
-                HistorialPodcast[] lista = HistorialPodcastDataBase.getInstance(context).historialPodcast().selectByIdArray(podcast1.id);
+                HistorialPodcast[] lista = TerritoryCastDataBase.getInstance(context).historialPodcast().selectByIdArray(podcast1.id);
 
 
                 int i = lista.length;
@@ -104,7 +104,7 @@ public class HistorialManager {
                 if(result != null){
                     item.setText(Utilidades.getFechaHoraFormato(result));
                 } else {
-                    item.setText("NO");
+                    item.setText("");
                 }
 
 

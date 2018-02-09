@@ -36,9 +36,11 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.alberapps.java.noticias.rss.NoticiaRss;
-import com.alberapps.java.noticias.rss.Noticias;
-import com.alberapps.java.programas.ProgramaService;
 import com.alberapps.territorycast.R;
+import com.alberapps.territorycast.programas.NuevoPrograma;
+import com.alberapps.territorycast.programas.Programa;
+import com.alberapps.territorycast.programas.ProgramaUtil;
+import com.alberapps.territorycast.tasks.LoadProgramasAsyncTask;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -60,6 +62,7 @@ public class NoticiasFragment extends Fragment implements SwipeRefreshLayout.OnR
 
     private AsyncTask<Object, Void, List<NoticiaRss>> loadNoticiasRssTask;
     private List<NoticiaRss> noticiasRss = new ArrayList<>();
+    public List<Programa> programasList = null;
 
     private RecyclerView recyclerView;
 
@@ -69,6 +72,8 @@ public class NoticiasFragment extends Fragment implements SwipeRefreshLayout.OnR
     private View cargandoView = null;
 
     private int filtroNoticias = 0;
+
+    private boolean limite = false;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -110,8 +115,15 @@ public class NoticiasFragment extends Fragment implements SwipeRefreshLayout.OnR
         nuevoRss.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, getString(R.string.en_desarrollo), Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+
+                if(!limite) {
+                    NuevoPrograma nuevoPrograma = new NuevoPrograma(getActivity());
+                    nuevoPrograma.cargarModalNuevoPrograma();
+                } else {
+                    Snackbar.make(view, getString(R.string.en_desarrollo), Snackbar.LENGTH_LONG)
+                          .setAction("Action", null).show();
+                }
+
             }
         });
 
@@ -200,7 +212,7 @@ public class NoticiasFragment extends Fragment implements SwipeRefreshLayout.OnR
 
 
             } else {
-                Toast.makeText(getActivity(), getString(R.string.error_datos), Toast.LENGTH_SHORT).show();
+                //Toast.makeText(getActivity(), getString(R.string.error_datos), Toast.LENGTH_SHORT).show();
             }
 
             if (noticiasRss == null || noticiasRss.isEmpty()) {
@@ -235,6 +247,17 @@ public class NoticiasFragment extends Fragment implements SwipeRefreshLayout.OnR
 
 
     public void consultarNoticias(int filtro) {
+
+        if(programasList == null || programasList.isEmpty()){
+            noticiasRss = null;
+            // Error al recuperar datos
+            cargarListadoRss();
+            Toast.makeText(getActivity().getApplicationContext(), getString(R.string.sinprogramas), Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        //provisional
+        Programa programa = programasList.get(0);
 
 
         filtroNoticias = filtro;
@@ -282,7 +305,7 @@ public class NoticiasFragment extends Fragment implements SwipeRefreshLayout.OnR
         NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
         if (networkInfo != null && networkInfo.isConnected()) {
 
-            loadNoticiasRssTask = new com.alberapps.territorycast.tasks.LoadNoticiasRssAsyncTask(loadNoticiasRssAsyncTaskResponder).execute(filtroNoticias);
+            loadNoticiasRssTask = new com.alberapps.territorycast.tasks.LoadNoticiasRssAsyncTask(loadNoticiasRssAsyncTaskResponder).execute(filtroNoticias, programa);
         } else {
             Toast.makeText(getActivity().getApplicationContext(), getString(R.string.error_red), Toast.LENGTH_LONG).show();
 
@@ -312,7 +335,7 @@ public class NoticiasFragment extends Fragment implements SwipeRefreshLayout.OnR
         swipeRefresh.setRefreshing(true);
 
 
-        ProgramaService programaService = new ProgramaService();
+       /* ProgramaService programaService = new ProgramaService();
 
         Noticias programas = programaService.getProgramas(filtro, getContext());
 
@@ -328,7 +351,43 @@ public class NoticiasFragment extends Fragment implements SwipeRefreshLayout.OnR
 
         }
 
-        swipeRefresh.setRefreshing(false);
+        swipeRefresh.setRefreshing(false);*/
+
+
+        LoadProgramasAsyncTask.LoadProgramasAsyncTaskResponder loadProgramasAsyncTaskResponder = new LoadProgramasAsyncTask.LoadProgramasAsyncTaskResponder() {
+            public void ProgramasLoaded(List<Programa> programas) {
+
+                if (programas != null && !programas.isEmpty()) {
+
+                    limite = true;
+
+                    ProgramaUtil programaUtil = new ProgramaUtil();
+
+                    noticiasRss = programaUtil.getProgramas(programas, getContext()).getNoticiasList();
+
+                    programasList = programas;
+
+                    cargarListadoRss();
+
+                } else {
+
+                    noticiasRss = null;
+                    // Error al recuperar datos
+                    cargarListadoRss();
+
+                    Toast.makeText(getActivity().getApplicationContext(), getString(R.string.sinprogramas), Toast.LENGTH_LONG).show();
+
+
+                }
+
+                swipeRefresh.setRefreshing(false);
+
+
+            }
+        };
+
+
+        new LoadProgramasAsyncTask(loadProgramasAsyncTaskResponder).execute(getContext());
 
 
     }

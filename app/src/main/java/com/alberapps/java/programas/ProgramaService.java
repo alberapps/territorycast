@@ -70,9 +70,15 @@ public class ProgramaService {
         /////////////
 
         NoticiaRss programaRss = new NoticiaRss();
-        programaRss.setTitle("Territori Sonor © À Punt Mèdia 2017");
+/*        programaRss.setTitle("Territori Sonor © À Punt Mèdia 2017");
         programaRss.setDescription("Magazín musical diari presentat per Amàlia Garrigós. Un espai dedicat a la música que valora la diversitat d'estils i de llengües.");
         programaRss.setUrlPrimeraImagen("http://progressive.enetres.net/getPhoenixResource.php?u=7F1AFD6AAF2446E1A0EEDDC3496EAE30&f=images/territori-sonor.jpg&flashClient=true&c=001");
+*/
+
+
+
+
+
 
         programaRss.setPrograma(true);
 

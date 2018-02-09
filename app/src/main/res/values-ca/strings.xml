@@ -3,7 +3,7 @@
     <string name="app_name">TerritoryCast</string>
     <string name="error_red">Error en la connexió</string>
     <string name="sin_informacion">Sense informació</string>
-    <string name="browse_genres">Podcasts del programa</string>
+    <string name="browse_genres">Podcasts</string>
     <string name="browse_genre_subtitle">Agrupats per mes i any d\'emissió</string>
     <string name="preferencias">Preferències</string>
     <string name="comunicacion">Comunicació</string>

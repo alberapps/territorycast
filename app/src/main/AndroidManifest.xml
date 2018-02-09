@@ -249,6 +249,9 @@
         <activity android:name=".tv.AppInfoDialogActivity"
             android:theme="@style/Theme.tv.LeanbackDialog"/>
 
+        <activity android:name=".tv.NuevoDialogActivity"
+            android:theme="@style/Theme.tv.LeanbackDialog"/>
+
     </application>
 
 </manifest>

@@ -27,16 +27,39 @@ public final class ProgramaList {
 
     public static List<Programa> getList() {
         if (list == null) {
-            list = setupProgramas();
+            list = setupProgramas(null);
         }
         return list;
     }
 
 
 
-    public static List<Programa> setupProgramas() {
+    public static List<Programa> setupProgramas(List<com.alberapps.territorycast.programas.Programa> programaList) {
         list = new ArrayList<>();
+
+
+        //TODO
+
         String title[] = {
+                programaList.get(0).getNombre()
+        };
+
+        String description = programaList.get(0).getDescripcion();
+        String studio[] = {
+                ""
+        };
+        String videoUrl[] = {
+                ""
+        };
+        String bgImageUrl[] = {
+                programaList.get(0).getImg()
+        };
+        String cardImageUrl[] = {
+                programaList.get(0).getImg()
+        };
+
+
+        /*String title[] = {
                 "Territori Sonor"
         };
 
@@ -52,7 +75,9 @@ public final class ProgramaList {
         };
         String cardImageUrl[] = {
                 "http://progressive.enetres.net/getPhoenixResource.php?u=7F1AFD6AAF2446E1A0EEDDC3496EAE30&f=images/territori-sonor.jpg&flashClient=true&c=001"
-        };
+        };*/
+
+
 
         for (int index = 0; index < title.length; ++index) {
             list.add(

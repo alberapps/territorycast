@@ -19,6 +19,7 @@
  */
 package com.alberapps.territorycast.uamp.model.territorycast;
 
+import android.content.Context;
 import android.support.v4.media.MediaMetadataCompat;
 
 import com.alberapps.java.noticias.rss.NoticiaRss;
@@ -54,6 +55,12 @@ public class RemoteTerritoryCastSource implements MusicProviderSource {
     private static final String JSON_TOTAL_TRACK_COUNT = "totalTrackCount";
     private static final String JSON_DURATION = "duration";
 
+    private Context context = null;
+
+    public RemoteTerritoryCastSource(Context contextParam) {
+        context = contextParam;
+    }
+
     @Override
     public Iterator<MediaMetadataCompat> iterator() {
         /*try {
@@ -78,7 +85,7 @@ public class RemoteTerritoryCastSource implements MusicProviderSource {
 
         try {
 
-            PodcastTS podcastTS = new PodcastTS();
+            PodcastTS podcastTS = new PodcastTS(context);
 
             Noticias podcasts = podcastTS.getPodcastFeed();
 
@@ -131,6 +138,9 @@ public class RemoteTerritoryCastSource implements MusicProviderSource {
         //String iconUrl = "http://progressive.enetres.net/getPhoenixResource.php?u=7F1AFD6AAF2446E1A0EEDDC3496EAE30&f=images/territori-sonor.jpg";
         String iconUrl = rss.getUrlPrimeraImagen();
 
+        if (iconUrl == null || iconUrl.equals("")) {
+            iconUrl = "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fb/Orion_Watching_Over_ALMA.jpg/1024px-Orion_Watching_Over_ALMA.jpg";
+        }
 
         int trackNumber = i + 1;
         int totalTrackCount = total;
