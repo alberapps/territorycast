@@ -98,7 +98,7 @@ public class MediaItemViewHolder {
                 holder.mRepDateView.setVisibility(View.VISIBLE);
 
 
-                historial.isInHistorial(item.getMediaId(), holder.mRepDateView);
+                historial.isInHistorial(item.getMediaId(), holder.mRepDateView, null);
 
                 //holder.mRepDateView.setText("20");
 

@@ -237,6 +237,10 @@ public class Utilidades {
 
             fechaString = df.format(fecha);
 
+            if(fechaString.contains("de ")){
+                fechaString = fechaString.replace("de ", "");
+            }
+
             return fechaString;
 
         }

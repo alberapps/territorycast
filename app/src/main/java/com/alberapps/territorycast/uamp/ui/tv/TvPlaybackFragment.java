@@ -48,7 +48,10 @@ import android.support.v4.media.session.MediaControllerCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 
+import com.alberapps.territorycast.historial.HistorialManager;
 import com.alberapps.territorycast.uamp.AlbumArtCache;
+import com.alberapps.territorycast.uamp.model.MusicProviderSource;
+import com.alberapps.territorycast.uamp.model.territorycast.RemoteUtils;
 import com.alberapps.territorycast.uamp.utils.LogHelper;
 import com.alberapps.territorycast.uamp.utils.QueueHelper;
 
@@ -274,6 +277,19 @@ public class TvPlaybackFragment extends PlaybackSupportFragment {
             initializePlaybackControls(metadata);
         }
         mDuration = (int) metadata.getLong(MediaMetadataCompat.METADATA_KEY_DURATION);
+
+        /////Actualizacion de tiempo si no disponible
+        if(mDuration == 0){
+            mDuration = (int) RemoteUtils.getMetadataDuration(metadata.getString(MusicProviderSource.CUSTOM_METADATA_TRACK_SOURCE));
+        }
+
+        //Historial
+        HistorialManager historial = new HistorialManager(getContext());
+        historial.saveHistorial(metadata);
+
+        ////
+
+
         mPlaybackControlsRow.setTotalTime(mDuration);
         ((MutableMediaMetadataHolder) mPlaybackControlsRow.getItem()).metadata = metadata;
         mRowsAdapter.notifyArrayItemRangeChanged(

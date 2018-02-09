@@ -112,6 +112,7 @@ public class RemoteTerritoryCastSource implements MusicProviderSource {
         String title = rss.getTitle();
         String album = rss.getDescription();
         String artist = rss.getAuthor();
+        //String artist = rss.getDescription();
 
 
         //genero
@@ -146,18 +147,20 @@ public class RemoteTerritoryCastSource implements MusicProviderSource {
         int totalTrackCount = total;
 
 
-        int duration = 0;
+        long duration = 0;
         if (rss.getDuration() != null) {
-            duration = (int) Utilidades.duracionStringtoLong(rss.getDuration());
+            duration = Utilidades.duracionStringtoLong(rss.getDuration());
         } else {
-            duration = (int) Utilidades.duracionStringtoLong("1:00:00");
+            //duration = getMetadataDuration(source);
+            //duration = Utilidades.duracionStringtoLong("1:00:00");
         }
 
+        String idAux = artist + title + rss.getPubDate();
 
-        String id = String.valueOf(title.hashCode());
+        String id = String.valueOf(idAux.hashCode());
 
 
-        return new MediaMetadataCompat.Builder()
+        MediaMetadataCompat metadata = new MediaMetadataCompat.Builder()
                 .putString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID, id)
                 .putString(MusicProviderSource.CUSTOM_METADATA_TRACK_SOURCE, source)
                 .putString(MediaMetadataCompat.METADATA_KEY_ALBUM, album)
@@ -170,7 +173,15 @@ public class RemoteTerritoryCastSource implements MusicProviderSource {
                 .putLong(MediaMetadataCompat.METADATA_KEY_NUM_TRACKS, totalTrackCount)
                 .build();
 
+        return metadata;
+
     }
+
+
+
+
+
+
 
 
     /*private MediaMetadataCompat buildFromJSON(JSONObject json, String basePath) throws JSONException {

@@ -19,7 +19,6 @@
 package com.alberapps.java.podcast;
 
 import android.content.Context;
-import android.text.Html;
 
 import com.alberapps.java.noticias.rss.Noticias;
 import com.alberapps.java.noticias.rss.ParserXML;
@@ -85,7 +84,11 @@ public class PodcastTS {
 
                     //Editar la descripcion
                     contenidoAux = noticias.getNoticiasList().get(i).getDescription();
-                    descripcion = (Html.fromHtml(noticias.getNoticiasList().get(i).getDescription())).toString();
+
+                    Document doc1 = Jsoup.parse(Utilidades.stringToStream(noticias.getNoticiasList().get(i).getDescription()), "UTF-8", URL);
+                    descripcion = doc1.text();
+
+                    //descripcion = (Html.fromHtml(noticias.getNoticiasList().get(i).getDescription())).toString();
                     noticias.getNoticiasList().get(i).setDescription(descripcion);
 
                     //Primera foto disponible
@@ -104,7 +107,7 @@ public class PodcastTS {
                     if (imagen != null) {
 
                         String srcImg = imagen.attr("abs:src");
-                        if(srcImg != null && (srcImg.endsWith("jpg") || srcImg.endsWith("png") || srcImg.endsWith("JPG") || srcImg.endsWith("PNG"))) {
+                        if(srcImg != null && (srcImg.contains(".jpg") || srcImg.contains(".png") || srcImg.contains(".JPG") || srcImg.contains(".PNG"))) {
                             noticias.getNoticiasList().get(i).setUrlPrimeraImagen(srcImg);
                         }else {
                             noticias.getNoticiasList().get(i).setUrlPrimeraImagen("https://upload.wikimedia.org/wikipedia/commons/thumb/f/fb/Orion_Watching_Over_ALMA.jpg/1024px-Orion_Watching_Over_ALMA.jpg");

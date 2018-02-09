@@ -3,10 +3,13 @@ package com.alberapps.territorycast.historial;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.AsyncTask;
+import android.support.v17.leanback.widget.ImageCardView;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.media.MediaMetadataCompat;
 import android.widget.TextView;
 
 import com.alberapps.java.util.Utilidades;
+import com.alberapps.territorycast.R;
 import com.alberapps.territorycast.database.HistorialPodcast;
 import com.alberapps.territorycast.database.TerritoryCastDataBase;
 import com.alberapps.territorycast.uamp.model.MusicProviderSource;
@@ -68,7 +71,7 @@ public class HistorialManager {
     }
 
     @SuppressLint("StaticFieldLeak")
-    public void isInHistorial(String id, final TextView item){
+    public void isInHistorial(String id, final TextView item, final ImageCardView mCardView){
 
         HistorialPodcast podcast = new HistorialPodcast();
 
@@ -101,9 +104,13 @@ public class HistorialManager {
             protected void onPostExecute(Date result) {
                 super.onPostExecute(result);
 
-                if(result != null){
+                if(mCardView != null && result != null){
+
+                    mCardView.setInfoAreaBackgroundColor(ContextCompat.getColor(context, R.color.material_green_800));
+
+                }else if(item != null && result != null){
                     item.setText(Utilidades.getFechaHoraFormato(result));
-                } else {
+                } else if (item != null){
                     item.setText("");
                 }
 

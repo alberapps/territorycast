@@ -120,7 +120,9 @@ public class ParserXML {
                 noticias.setTitle(readText(parser));
             } else if (name.equals("description")) {
                 noticias.setDescription(readText(parser));
-            } else {
+            } else if (name.equals("image")) {
+                noticias.setImage(readImage(parser));
+            }else {
                 skip(parser);
             }
         }
@@ -181,6 +183,28 @@ public class ParserXML {
             }
         }
         return noticia;
+    }
+
+    private String readImage(XmlPullParser parser) throws XmlPullParserException, IOException {
+
+        String url = "";
+
+        parser.require(XmlPullParser.START_TAG, ns, "image");
+        while (parser.next() != XmlPullParser.END_TAG) {
+            if (parser.getEventType() != XmlPullParser.START_TAG) {
+                continue;
+            }
+            String name = parser.getName();
+            // Starts by looking for the item tag
+            if (name.equals("url")) {
+                url = readText(parser);
+            }
+
+            else {
+                skip(parser);
+            }
+        }
+        return url;
     }
 
 

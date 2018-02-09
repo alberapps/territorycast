@@ -173,7 +173,7 @@
     <string name="en_desarrollo_1" translatable="false">Hola :-)</string>
     <string name="en_desarrollo_2">TerritoryCast está en una fase inicial del desarrollo. Muy pronto podrás añadir tus propios rss y podcast, pero por ahora sólo hay uno activo.</string>
     <string name="title_activity_territory_cast_tv" translatable="false">TerritoryCast</string>
-    <string name="browse_title" translatable="false"><![CDATA[TerriroryCast]]></string>
+    <string name="browse_title" translatable="false"><![CDATA[TerritoryCast]]></string>
     <string name="related_movies" translatable="false">Related Videos</string>
     <string name="grid_view" translatable="false">Grid View</string>
     <string name="error_fragment" translatable="false">Error Fragment</string>

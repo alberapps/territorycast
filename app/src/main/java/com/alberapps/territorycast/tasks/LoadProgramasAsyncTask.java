@@ -21,6 +21,8 @@ package com.alberapps.territorycast.tasks;
 import android.content.Context;
 import android.os.AsyncTask;
 
+import com.alberapps.java.noticias.rss.Noticias;
+import com.alberapps.java.podcast.PodcastTS;
 import com.alberapps.territorycast.programas.Programa;
 import com.alberapps.territorycast.programas.ProgramasManager;
 
@@ -58,7 +60,31 @@ public class LoadProgramasAsyncTask extends AsyncTask<Object, Void, List<Program
 
             programasList = programasManager.getProgramas();
 
+            try {
+
+                Noticias noticias = null;
+
+
+                for (int i = 0; i < programasList.size(); i++) {
+
+                    PodcastTS noticiasTS = new PodcastTS(context);
+
+                    //TODO parametrizar
+                    noticias = noticiasTS.getPodcastFeed();
+
+                    programasList.get(i).setNombre(noticias.getTitle());
+                    programasList.get(i).setDescripcion(noticias.getDescription());
+                    programasList.get(i).setImg(noticias.getImage());
+
+                }
+
+            }catch(Exception e){
+                e.printStackTrace();
+            }
+
+
         } catch (Exception e) {
+            e.printStackTrace();
             return null;
         }
 

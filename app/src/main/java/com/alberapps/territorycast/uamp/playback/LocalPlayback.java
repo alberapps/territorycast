@@ -234,7 +234,7 @@ public final class LocalPlayback implements Playback {
             // Produces DataSource instances through which media data is loaded.
             DataSource.Factory dataSourceFactory =
                     new DefaultDataSourceFactory(
-                            mContext, Util.getUserAgent(mContext, "uamp"), null);
+                            mContext, Util.getUserAgent(mContext, "TerritoryCast"), null);
             // Produces Extractor instances for parsing the media data.
             ExtractorsFactory extractorsFactory = new DefaultExtractorsFactory();
             // The MediaSource represents the media to be played.

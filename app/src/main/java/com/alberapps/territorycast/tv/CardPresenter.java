@@ -79,7 +79,7 @@ public class CardPresenter extends Presenter {
         Log.d(TAG, "onBindViewHolder");
         if (programa.getCardImageUrl() != null) {
             cardView.setTitleText(programa.getTitle());
-            cardView.setContentText(programa.getStudio());
+            cardView.setContentText(programa.getDescription());
             cardView.setMainImageDimensions(CARD_WIDTH, CARD_HEIGHT);
             Glide.with(viewHolder.view.getContext())
                     .load(programa.getCardImageUrl())

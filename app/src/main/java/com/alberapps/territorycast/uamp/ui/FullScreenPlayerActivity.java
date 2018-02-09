@@ -41,6 +41,8 @@ import android.widget.TextView;
 import com.alberapps.territorycast.R;
 import com.alberapps.territorycast.uamp.AlbumArtCache;
 import com.alberapps.territorycast.uamp.MusicService;
+import com.alberapps.territorycast.uamp.model.MusicProviderSource;
+import com.alberapps.territorycast.uamp.model.territorycast.RemoteUtils;
 import com.alberapps.territorycast.uamp.utils.LogHelper;
 
 import java.util.concurrent.Executors;
@@ -338,6 +340,13 @@ public class FullScreenPlayerActivity extends ActionBarCastActivity {
         }
         LogHelper.d(TAG, "updateDuration called ");
         int duration = (int) metadata.getLong(MediaMetadataCompat.METADATA_KEY_DURATION);
+
+        /////Actualizacion de tiempo si no disponible
+        if(duration == 0){
+            duration = (int) RemoteUtils.getMetadataDuration(metadata.getString(MusicProviderSource.CUSTOM_METADATA_TRACK_SOURCE));
+        }
+        ////
+
         mSeekbar.setMax(duration);
         mEnd.setText(DateUtils.formatElapsedTime(duration/1000));
     }

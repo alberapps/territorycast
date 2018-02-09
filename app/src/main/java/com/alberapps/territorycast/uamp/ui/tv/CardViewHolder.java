@@ -16,6 +16,7 @@
 
 package com.alberapps.territorycast.uamp.ui.tv;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -34,6 +35,7 @@ import android.support.v17.leanback.widget.Presenter;
 import android.support.v4.media.MediaDescriptionCompat;
 import android.view.View;
 
+import com.alberapps.territorycast.historial.HistorialManager;
 import com.alberapps.territorycast.uamp.AlbumArtCache;
 import com.alberapps.territorycast.uamp.ui.MediaItemViewHolder;
 
@@ -82,14 +84,22 @@ public class CardViewHolder extends Presenter.ViewHolder {
      * Set the view in this holder to represent the media metadata in {@code description}
      *
      **/
+    @SuppressLint("NewApi")
     public void setupCardView(final Context context, MediaDescriptionCompat description) {
         mCardView.setTitleText(description.getTitle());
         mCardView.setContentText(description.getSubtitle());
         mCardView.setMainImageDimensions(CARD_WIDTH, CARD_HEIGHT);
 
+
+         if(mItemState == MediaItemViewHolder.STATE_PLAYABLE){
+             HistorialManager historial = new HistorialManager(context);
+             historial.isInHistorial(description.getMediaId(), null, mCardView);
+         }
+
         // Based on state of item, set or unset badge
         Drawable drawable = MediaItemViewHolder.getDrawableByState(context, mItemState);
         mCardView.setBadgeImage(drawable);
+
 
         Uri artUri = description.getIconUri();
         if (artUri == null) {
